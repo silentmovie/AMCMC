@@ -1,0 +1,5 @@
+*.pyc
+*.egg*
+build
+.vscode
+.DS_Store
