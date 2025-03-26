@@ -5,6 +5,7 @@
 
 %% Initialization
 rng(4,"twister")
+seed = 3;
 N = 3;         % num of states
 % pai = rand(1,N);                   
 % pai = pai/sum(pai);
@@ -13,7 +14,8 @@ N = 3;         % num of states
 % pai = pai/sum(pai);
 
 pai = [2/3, 1/6, 1/6];
-rho0 = rand(1,N);
+% rho0 = rand(1,N);
+rho0 = ones(1,3);
 rho0 = rho0/sum(rho0);
 
 % rho0 = [0.1, 0.1, 0.8]
@@ -25,23 +27,24 @@ psi0 = -rho0./pai;
 
 % alphat = sqrt(3);
 
-tspan = [0,50];
-deltaT = 1e-1;
+tspan = [0,1.5];
+deltaT = 1e-2;
 TotIt = tspan(2)/deltaT;
 halftime = tspan(2)/2;
 t = [tspan(1):deltaT:tspan(2)]';
+samplesize = 1e4;
 mode = 'None';
 
 
 %% Create a Q-matrix and run MH-ode iteration 
 
 Q = QMH(pai);
-edge = edgeQ(pai);
+edge = edgeCn(pai);
 Q = Q.*edge;
 Qrow = RowSumZero(Q)
 
 Eigenvalue = eig(Qrow);
-% minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
+minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
 % alphat = 2*sqrt(-minEig);
 % alphat = 0;
 

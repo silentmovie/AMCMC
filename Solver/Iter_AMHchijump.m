@@ -43,22 +43,51 @@ for j = 2:(TotIt+1)
         j
     end
 
+    % warm-stary by MH
+    if deltaT*double(j) <=0.3
+       
+       rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+       psihist(j,:) = -rhohist(j,:)./pai;
+       Ham(j) = 0.5*sum((rhohist(j,:)-pai).^2./pai);
+       Ham(j) = Ham(j) + sum(0.25*pai*(psidiffsquare(psihist(j,:)).*Q));
+       alphathist(j) = -1;
+       effSteps(j) = deltaT;
+       continue
+    end
+
     out = zeros(N,N);
-    W = Q.*(PNpsi(psiCur))';
-    W = diag(pai./rhohist(j-1,:)) * W;
-    W = RowSumZero(W);
-    W = eye(N) + deltaT * W;
+    P = Q.*(PNpsi(psihist(j-1,:)));
+    P = diag(pai./rhohist(j-1,:)) * P;
+    P = RowSumZero(P);
+
+    tmp_deltaT = deltaT;
+    negative_part = eye(N) + tmp_deltaT * P;
+    while any(negative_part(:) < 0)
+        
+        % enable in debug mode
+        warning('negative part in (%d)-th iteration', j)
+        % find(negative_part(:) < 0)
+        
+        % pause
+        tmp_deltaT = 0.1* tmp_deltaT
+        negative_part = eye(N) + tmp_deltaT * P;
+    end
+    effSteps(j) = tmp_deltaT;
+    P = eye(N) + tmp_deltaT * P;
     
     parfor state = 1:N
-        tmp = randsample(N, current(state), true, W(state,:))';
+        tmp = randsample(N, current(state), true, P(state,:))';
         out(state,:) = histcounts(tmp, edges);
     end
     % current(i) = # of particle at node i.
     current = sum(out,1);
     rhohist(j,:) = current/samplesize;
+    if j==31
+        P
+        
 
     % Gauss-Seidel iteration
-    psiCur = psiCur + deltaT * (-alphat*psiCur - rhohist(j,:)./pai + 1);
+    psiCur = psiCur + tmp_deltaT * (-alphat*psiCur - rhohist(j,:)./pai + 1);
 
     Ham(j) = 0.5*sum((rhohist(j,:)-pai).^2./pai);
     Ham(j) = Ham(j) + sum(0.25*pai*(psidiffsquare(psiCur).*Q));
