@@ -1,0 +1,6 @@
+N = 3
+seed = 5
+tspan = 0  10000
+deltaT = 1.00e+00
+samplesize = 1.00e+06
+minEig = -7.46e-01

@@ -6,16 +6,14 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'AMHchi-2025-03-26-16-38-23';
+filename = 'MH-2025-03-26-16-49-00';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
 odeFile = fullfile(dataDir, 'ode.mat');
 jumpFile = fullfile(dataDir, 'jump.mat');
 paiFile = fullfile(dataDir, 'pai.mat');
-HamFile = fullfile(dataDir, 'ham.mat');
-alphatFile = fullfile(dataDir, 'alphat.mat');
-stepFile = fullfile(dataDir, 'steps.mat');
+% stepFile = fullfile(dataDir, 'steps.mat');
 % maxRowFile = fullfile(dataDir, 'maxRowSum.mat');
 % One can read the parameter.txt file to setup plot parameter
 
@@ -23,9 +21,7 @@ load(parameterFile)
 load(odeFile)
 load(jumpFile)
 load(paiFile)
-load(HamFile)
-load(alphatFile)
-load(stepFile)
+% load(stepFile)
 % load(maxRowFile)
 
 [TotIt,~] = size(rhoODE);
@@ -38,11 +34,9 @@ t = (tspan(1):deltaT:tspan(2))';
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 % pltstep = 5*int64(1/deltaT);
 pltstep = max(TotIt/100,1);
-% pltstep = 1;
 startpt = 0;
 figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
-%     
-subplot(3,1,1)
+subplot(2,1,1)
 
 L = zeros(3,1);
 L(1) = plot(0,nan,'k.');
@@ -68,9 +62,22 @@ xlabel(['Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 ylabel('Density')
 subtitle({['\fontsize{20} Sampling Dynamics for ', num2str(N), ' nodes']
            ['\fontsize{20} Sampling particles = ', num2str(samplesize, '%0.2e')]
-           ['\fontsize{20} \alpha_t = ', num2str(alphat, '%0.2e')]
            })
 legend(L,'Target',strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
+
+subplot(2,1,2)
+
+errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorODE = log10(errorODE);
+errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorJump = log10(errorJump);
+hold on;
+plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
+plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
+plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
+hold off;
+subtitle(['\fontsize{20} t-log(error)'])
 
 
 % subplot(4,1,2)
@@ -100,63 +107,29 @@ legend(L,'Target',strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fonts
 % legend(L,strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13);
 % 
 % 
-subplot(3,1,2)
-hold on;
-plot((startpt:pltstep:TotIt-1),log10(HamODE(startpt+1:pltstep:TotIt)),'marker','*')
-plot((startpt:pltstep:TotIt-1),log10(HamJump(startpt+1:pltstep:TotIt)),'marker','^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'eastoutside');
-hold off;
-subtitle('The Decay of log10(Hamiltonian)', 'fontsize',20)
+% subplot(4,1,2)
+% hold on;
+% plot((0:pltstep:TotIt-1),HamODE(1:pltstep:TotIt),'marker','*')
+% % plot((0:pltstep:TotIt-1),HamJump(1:pltstep:TotIt),'marker','^')
+% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13,'Location', 'eastoutside');
+% hold off;
+% subtitle('The Decay of Hamiltonian', 'fontsize',15)
 
-subplot(3,1,3)
 
-errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
-logErrorODE = log10(errorODE);
-errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
-logErrorJump = log10(errorJump);
-hold on;
-plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
-plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
-plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
-hold off;
-subtitle(['\fontsize{20} t-log(error)'])
-
-% subplot(5,1,4)
+% subplot(4,1,4)
 % 
-% psisumODE= sum(psiODE,2);
-% psisumJump = sum(psiJump,2);
-% hold on;
-% plot((startpt:pltstep:TotIt-1),psisumODE(startpt+1:pltstep:TotIt),'marker','*')
-% plot((startpt:pltstep:TotIt-1),psisumJump(startpt+1:pltstep:TotIt),'marker','*')
-% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
-% hold off;
-% subtitle(['\fontsize{20} sum of psi'])
-
-
-% subplot(5,1,5)
-
-% Diff2MHODE = sum(log(rhoODE(1:TotIt,:)./pai)+psiODE(1:TotIt,:),2);
-% Diff2MHJump = sum(log(rhoJump(1:TotIt,:)./pai)+psiJump(1:TotIt,:),2);
-% hold on;
-% plot((startpt:pltstep:TotIt-1),Diff2MHODE(startpt+1:pltstep:TotIt),'marker','*')
-% plot((startpt:pltstep:TotIt-1),Diff2MHJump(startpt+1:pltstep:TotIt),'marker','^')
-% hold off;
-% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13, 'Location', 'eastoutside');
+% Diff2MH = sum(log(rhoODE(1:TotIt,:)./pai)+psiODE(1:TotIt,:),2);
+% plot((0:TotIt-1),Diff2MH)
 % subtitle(['log(p/pi)+psi'])
 
-% subplot(5,1,5)
-% plot((0:1200),alphatODE(1:1201))
-% subtitle('alphat')
-
-% subplot(5,1,5)
+% subplot(6,1,5)
 % hold on;
-% plot((1:pltstep:TotIt-1),StepODE(2:pltstep:TotIt),'marker','*')
-% plot((1:pltstep:TotIt-1),StepJump(2:pltstep:TotIt),'marker','^')
-% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
+% plot((0:pltstep:TotIt-2),StepODE(1:pltstep:TotIt-1),'marker','*')
+% plot((0:0.5*pltstep:TotIt-2),StepJump(1:0.5*pltstep:TotIt-1),'marker','^')
+% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13);
 % ylim([0.2*deltaT,5*deltaT])
 % hold off;
-% subtitle('Effective steps', 'fontsize',20)
+% subtitle('Effective steps', 'fontsize',15)
 % 
 % subplot(6,1,6)
 % hold on;
@@ -167,6 +140,5 @@ subtitle(['\fontsize{20} t-log(error)'])
 % subtitle('Max Qbar entry in each iteration', 'fontsize',15)
 
 set(findall(gcf, 'Type', 'axes'), 'FontSize', 20);
-
 figFile = fullfile(dataDir, 'Valid-long.png');
 saveas(gcf, figFile)

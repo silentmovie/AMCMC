@@ -1,19 +1,26 @@
 function rhohist = Iter_MHjump(pai, rho0, Q, tspan, deltaT, samplesize, mode)
 
-N = length(pai);
+%%% Initialization
+%% Data structure:
+% 1) pai,rho0 are row vectors
+% 2) y(j,:) is the history of k at time j
+%    each row of y is a state; each col of y is a time curve of that position
 
+N = length(pai);
 TotIt = tspan(2)/deltaT;
 rhohist = zeros(TotIt+1, N);
+edges = [0.5:1:(N+0.5)];     % bins in the randsample
+
+%% Initial Data
+rhohist(1,:) = rho0;         % the first row of rho-history is t=0, the last row is t=tspan(2)
 
 % inpo is array of 1*samplesize, 
 inpo = randsample(N,samplesize, true, rho0)';    % entry is the state of one particle 
 % current is array of 1*N
 current = histcounts(inpo, N);    % entry is # of particles in each state
 
-edges = [0.5:1:(N+0.5)];     % bins in the randsample
 
 
-rhohist(1,:) = rho0;         % the first row of rho-history is t=0, the last row is t=tspan(2)
 P = eye(N) + Q*deltaT;       % eq:jump on Page 3, P(i,j) is prob of node i jump to node j.
 
 for j = 2:TotIt+1
@@ -37,11 +44,11 @@ for j = 2:TotIt+1
 end
 
 
-error = sqrt(sum((rhohist(:,1:N)-pai).^2,2));     % cal row norm of the difference
-logError = log10(error);
+% error = sqrt(sum((rhohist(:,1:N)-pai).^2,2));     % cal row norm of the difference
+% logError = log10(error);
 
-%%%%%%%%%%%
-size(logError)
+% %%%%%%%%%%%
+% size(logError)
 
 if strcmp(mode, 'None')
     
