@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'AMHFisher-2025-02-10-11-40-46';
+filename = 'AMHchi-2025-03-26-14-42-26';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -30,14 +30,14 @@ load(stepFile)
 
 [TotIt,~] = size(rhoODE);
 
-% TotIt =100;
+% TotIt =;
 
 cc = hsv(6);
 t = (tspan(1):deltaT:tspan(2))';
     
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 pltstep = 5*int64(1/deltaT);
-% pltstep = 50;
+% pltstep = 1;
 startpt = 0;
 figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
 %     
@@ -151,8 +151,8 @@ subtitle(['\fontsize{18} sum of psi'])
 subplot(5,1,5)
 hold on;
 plot((1:pltstep:TotIt-1),StepODE(2:pltstep:TotIt),'marker','*')
-plot((1:0.5*pltstep:TotIt-1),StepJump(2:0.5*pltstep:TotIt),'marker','^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',18);
+plot((1:pltstep:TotIt-1),StepJump(2:pltstep:TotIt),'marker','^')
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',18, 'Location', 'eastoutside');
 ylim([0.2*deltaT,5*deltaT])
 hold off;
 subtitle('Effective steps', 'fontsize',18)
@@ -165,6 +165,7 @@ subtitle('Effective steps', 'fontsize',18)
 % hold off;
 % subtitle('Max Qbar entry in each iteration', 'fontsize',15)
 
+set(findall(gcf, 'Type', 'axes'), 'FontSize', 20);
 
 figFile = fullfile(dataDir, 'Valid-long.png');
 saveas(gcf, figFile)

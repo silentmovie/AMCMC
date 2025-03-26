@@ -1,11 +1,11 @@
-% clear;
-% clc;
-% close all;
+clear;
+clc;
+close all;
 
 
 %% Initialization
-rng(3,"twister")
-seed = 3;
+seed = 5;
+rng(seed,"twister")
 N = 3;         % num of states
 pai = rand(1,N);                   
 pai = pai/sum(pai);
@@ -32,7 +32,7 @@ deltaT = 1e-3;
 TotIt = tspan(2)/deltaT;
 halftime = tspan(2)/2;
 t = [tspan(1):deltaT:tspan(2)]';
-samplesize = 1e4;
+samplesize = 1e6;
 mode = 'None';
 
 
@@ -47,6 +47,7 @@ Eigenvalue = eig(Qrow);
 minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
 % alphat = 2*sqrt(-minEig);
 % alphat = 0;
+return
 
 %% Run AMH-chi method solver 
 
@@ -58,7 +59,7 @@ for alphat = 2*sqrt(-minEig)        % damping parameter
 
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
-    NewFolder = ['data/AMHFisher-',Date];
+    NewFolder = ['data/AMHchi-',Date];
     mkdir(NewFolder)
 
     Qmat = ['Qrow.mat'];
@@ -91,15 +92,15 @@ for alphat = 2*sqrt(-minEig)        % damping parameter
     save(paimat, 'pai');
     save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize','alphat','minEig');
     
-    % save(Jumpmat, 'rhoJump', 'psiJump');
-    % save(Hammat, 'HamODE', 'HamJump');
-    % save(alphatmat,'alphatODE','alphatJump');
-    % save(stepmat, 'StepODE', 'StepJump');
-    
+    save(Jumpmat, 'rhoJump', 'psiJump');
+    save(Hammat, 'HamODE', 'HamJump');
+    save(alphatmat,'alphatODE','alphatJump');
+    save(stepmat, 'StepODE', 'StepJump');
     % 
-    save(Hammat, 'HamODE')
-    save(alphatmat,'alphatODE')
-    save(stepmat, 'StepODE');
+    % 
+    % save(Hammat, 'HamODE')
+    % save(alphatmat,'alphatODE')
+    % save(stepmat, 'StepODE');
 
     parametertxt = ['parameter.txt'];
     parametertxt = fullfile(NewFolder, parametertxt);

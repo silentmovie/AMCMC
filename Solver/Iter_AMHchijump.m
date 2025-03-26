@@ -85,7 +85,7 @@ for j = 2:(TotIt+1)
         
     % Gauss-Seidel iteration
     psiCur = psiCur + tmp_deltaT * (-alphat*psiCur - rhohist(j,:)./pai + 1);
-
+    psihist(j,:) = psiCur;
     Ham(j) = 0.5*sum((rhohist(j,:)-pai).^2./pai);
     Ham(j) = Ham(j) + sum(0.25*pai*(psidiffsquare(psiCur).*Q));
 end
