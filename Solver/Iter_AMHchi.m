@@ -38,6 +38,19 @@ for  j= 2:(TotIt+1)
     if mod(j,1000)==0
         j
     end
+    
+    % warm-stary by MH
+    if deltaT*double(j) <=0.3
+       
+       rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+       psihist(j,:) = -rhohist(j,:)./pai;
+       Ham(j) = 0.5*sum((rhohist(j,:)-pai).^2./pai);
+       Ham(j) = Ham(j) + sum(0.25*pai*(psidiffsquare(psihist(j,:)).*Q));
+       alphathist(j) = -1;
+       effSteps(j) = deltaT;
+       continue
+    end
+
 
     % Gauss-Seidel iteration
     rhohist(j,:) = rhohist(j-1,:) + deltaT * psihist(j-1,:) * diag(-pai) * Q;
