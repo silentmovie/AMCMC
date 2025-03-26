@@ -3,53 +3,40 @@ clc;
 close all;
 
 
-%% Initialization
-seed = 5;
-rng(seed,"twister")
-N = 3;         % num of states
-pai = rand(1,N);                   
-pai = pai/sum(pai);
-pai = sort(pai,'descend');      % target distribution (not necessary to be 'descend'
-% pai = ones(1,N);
-% pai = pai/sum(pai);
-% 
-% pai = [0.456913643618358	0.355387771485700	0.187698584895942];
-rho0 = rand(1,N);
-% rho0 = ones(1,3);
+%%% Initialization
+
+N = 3;                                        % num of states
+seed = 5;                                     % seed for random number generator with method 'twister'
+tspan = [0,100];                                % total time span
+deltaT = 1e-1;                                % time stepsize
+TotIt = tspan(2)/deltaT;                      % total iteration
+halftime = tspan(2)/2;
+t = [tspan(1):deltaT:tspan(2)]';
+mode = 'None';                                 % if 'None', no print, if 'Print', print directly by Iter_AMHchi function
+
+method = 'AMHchi';                             % method from different theta_{ij} and functional F proposed in the Accelerated method.
+
+%% create target pai, QMH as Qrow and its minimum eigenvalue
+[pai, Qrow, minEig] = ID_Cn(seed, N);
+
+samplesize = 1e6;                              % total particle numbers
+% samplesize = ceil(5/min(pai));
+
+%% create initial rho0 and psi0
+% rho0 = rand(1,N);
+rho0 = ones(1,3);
 rho0 = rho0/sum(rho0);
 
-% rho0 = [0.222092426514290	0.388226387575271	0.389681185910440]
-
+psi0 = -rho0./pai;
 % psi0 = rand(1,N)-0.5;
 % psi0 = psi0/sum(psi0);
 % psi0 = zeros(1,N);
-psi0 = -rho0./pai;
-
-% alphat = sqrt(3);
-
-tspan = [0,5];
-deltaT = 1e-3;
-TotIt = tspan(2)/deltaT;
-halftime = tspan(2)/2;
-t = [tspan(1):deltaT:tspan(2)]';
-samplesize = 1e6;
-mode = 'None';
 
 
-%% Create a Q-matrix and run MH-ode iteration 
+%% Run AMH method solver 
 
-Q = QMH(pai);
-edge = edgeCn(pai);
-Q = Q.*edge;
-Qrow = RowSumZero(Q)
-
-Eigenvalue = eig(Qrow);
-minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
-% alphat = 2*sqrt(-minEig);
-% alphat = 0;
-return
-
-%% Run AMH-chi method solver 
+funODE = str2func(['Iter_',method]);
+funJump = str2func(['Iter_',method,'jump']);
 
 for alphat = 2*sqrt(-minEig)        % damping parameter
      
@@ -59,7 +46,7 @@ for alphat = 2*sqrt(-minEig)        % damping parameter
 
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
-    NewFolder = ['data/AMHchi-',Date];
+    NewFolder = ['data/',method,'-',Date];
     mkdir(NewFolder)
 
     Qmat = ['Qrow.mat'];

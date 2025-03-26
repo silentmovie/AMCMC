@@ -1,27 +1,23 @@
-function [minEig, rhohist]=Iter_MH(pai,rho0,Q,tspan,deltaT,mode)
+function rhohist=Iter_MH(pai,rho0,Q,tspan,deltaT,mode)
 
-%%%
-% pai/rho0 are row vectors
-% rhohist(i,:) is the history of rho at time i
-% each row of rhohist is a state; each col of rhohist is a time curve of that position
+%%% Initialization
+%% Data structure:
+% 1) pai,rho0 are row vectors
+% 2) y(j,:) is the history of k at time j
+%    each row of y is a state; each col of y is a time curve of that position
 
 N = length(pai);
-
-Eigenvalue = eig(Q);
-
-% !!Artificial Approximation!!
-minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
-
-
-tmp = rho0;
 TotIt = int64(tspan(2)/deltaT);
 rhohist = zeros(TotIt+1,N);            %each row is a state; each col is a time curve of that position
-rhohist(1,:) = rho0;                   %first row of rho-history for t=0, the last row of rho-history for t=tspan(2)
+
+
+%% Initial Data
+rhohist(1,:) = rho0;                   % the first row of rho-history is t=0, the last row is t=tspan(2)                 
 
 
 for i=2:(TotIt+1)
-    tmp = tmp + tmp*(deltaT*Q);            % MH-ode defined between detailed-balanced and Q-MH on Page 2
-    rhohist(i,:) = tmp;
+    % MH-ode defined between detailed-balanced and Q-MH on Page 2
+    rhohist(i,:) = rhohist(i-1,:) + rhohist(i-1,:)*(deltaT*Q);
 end
 
 if strcmp(mode, 'None')
