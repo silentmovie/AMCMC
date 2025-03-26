@@ -1,7 +1,0 @@
-N = 3
-seed = 3
-tspan = 0  5
-deltaT = 1.00e-03
-samplesize = 1.00e+04
-ini_alphat = 2.09e+00
-minEig = -1.09e+00
