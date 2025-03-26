@@ -44,7 +44,7 @@ for j = 2:(TotIt+1)
     end
 
     % warm-stary by MH
-    if deltaT*double(j) <=0.3
+    if deltaT*double(j) <=0
        
        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
        psihist(j,:) = -rhohist(j,:)./pai;
@@ -82,10 +82,7 @@ for j = 2:(TotIt+1)
     % current(i) = # of particle at node i.
     current = sum(out,1);
     rhohist(j,:) = current/samplesize;
-    if j==31
-        P
         
-
     % Gauss-Seidel iteration
     psiCur = psiCur + tmp_deltaT * (-alphat*psiCur - rhohist(j,:)./pai + 1);
 

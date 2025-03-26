@@ -40,7 +40,7 @@ for  j= 2:(TotIt+1)
     end
     
     % warm-stary by MH
-    if deltaT*double(j) <=0.3
+    if deltaT*double(j) <=0
        
        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
        psihist(j,:) = -rhohist(j,:)./pai;
