@@ -1,0 +1,156 @@
+clear;
+clc;
+close all;
+
+
+%% Initialization
+N = 625;         % num of states
+seed = 3;
+rng(seed,"twister")
+
+n = sqrt(N);
+% pai(1,1:40) = 4;
+% pai(1,41:60) = 1;
+% pai(1,61:100) = 4;
+% pai = pai/sum(pai);
+
+x = linspace(0,1,n);
+y = linspace(0,1,n);
+y = y';
+
+xc1=0.25;
+yc1=0.25;
+xc2=0.75;
+yc2=0.75;
+
+% pai = exp(-0.5*((x-xc1).^2+(y-yc1).^2)*20);
+% pai = pai + exp(-0.5*((x-xc2).^2+(y-yc2).^2)*80);
+pai = exp(-0.5*((x-xc1).^2+(y-yc1).^2)*25);
+
+pai = pai + exp(-0.5*((x-xc2).^2+(y-yc2).^2)*100);
+pai = pai/(sum(sum(pai)));
+pai = reshape(pai,1,N);
+
+% pai=0.2*ones(n,n);
+% pai(3,6:19)=1;
+% pai(8,6:19)=1;
+% pai(17,6:19)=1;
+% pai(22,6:19)=1;
+% pai(8:17,13)=1;
+% pai(3:8,6)=1;
+% pai(3:8,19)=1;
+% pai(17:22,6)=1;
+% pai(17:22,19)=1;
+
+% pai = pai/(sum(sum(pai)));
+% pai = reshape(pai,1,N);
+
+% pai = rand(1,N); 
+% pai = [2/3, 1/6, 1/6];
+% pai = pai/sum(pai);
+% pai = sort(pai,'descend');      % target distribution (not necessary to be 'descend')
+rho0 = ones(1,N);
+rho0 = rho0/sum(rho0);
+% rho0 = rand(1,N);
+% rho0 = rho0/sum(rho0);
+
+% degree = [2 2 3 2 2 3 2 2];
+% degree(1,1:N) = 2;
+% degree(1,40) = 3;
+% degree(1,61) = 3;
+
+
+tspan = [0,1000];
+deltaT = 1e-1;
+TotIt = tspan(2)/deltaT;        % total iterations
+halftime = tspan(2)/2;
+t = [tspan(1):deltaT:tspan(2)]';
+% samplesize = ceil(5/min(pai));
+samplesize = ceil(5/min(pai));
+% samplesize = 1e4;
+
+% 'None' mode is the default mode to produce outputs/ 'Print' mode is to
+% print directly
+mode = 'None';                  
+
+%% Create a Q-matrix 
+
+%% Create a Q-matrix and run MH-ode iteration 
+
+% QMH_{ij}=min{pi_j*deg(i)/[pi_i*deg(j)], 1}
+% QMH(pai, (optional)degree)
+% Q = QMH(pai, degree);
+Q = QMH(pai);
+% edgeQ matrix produces a candidate kernel that embeds graph information,
+% the default one is C_n, each node sends to two nodes uniformly.
+% edge(degree)
+% edge = edgeTwoCycle(degree);
+% edge = edgeCn(pai);
+edge = edgeLattice(pai);
+Q = Q.*edge;              % eq:Q-MH on Page 2
+
+% RowSumZero is an operation to replace diagonal by each row sum (except on
+% diagonal)
+Qrow = RowSumZero(Q);     % defined between detailed-balanced and Q-MH on Page 2
+
+% check if detailed balance:
+DB = diag(pai)*Qrow;
+SymDiff = abs(DB- DB');
+if any(SymDiff >=1e-7,"all")
+    warning('not detailed balance')
+    pause
+end
+
+clear DB Q SymDiff
+
+
+%% Run MH-method solver 
+[minEig, rhoODE] = Iter_MH(pai,rho0,Qrow, tspan,deltaT,mode);
+
+rhoJump = Iter_MHjump(pai, rho0, Qrow, tspan, deltaT, samplesize, mode);
+
+%% Auto-save
+Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
+NewFolder = ['data/MH-',Date];
+mkdir(NewFolder)
+
+ODEmat = ['ode.mat'];
+ODEmat = fullfile(NewFolder, ODEmat);
+
+Jumpmat = ['jump.mat'];
+Jumpmat = fullfile(NewFolder, Jumpmat);
+
+paimat = ['pai.mat'];
+paimat = fullfile(NewFolder, paimat);
+
+parametermat =  ['parameter.mat'];
+parametermat = fullfile(NewFolder, parametermat);
+
+
+save(ODEmat, 'rhoODE');
+save(Jumpmat, 'rhoJump');
+save(paimat, 'pai');
+save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize');
+
+
+parametertxt = ['parameter.txt'];
+parametertxt = fullfile(NewFolder, parametertxt);
+
+parameterlist = {
+    ['N = ' num2str(N)]
+    ['seed = ' num2str(seed)]
+    ['tspan = ' num2str(tspan)]
+    ['deltaT = ' num2str(deltaT, '%0.2e')]
+    ['samplesize = ' num2str(samplesize, '%0.2e')]
+    ['minEig = ' num2str(minEig, '%0.2e')]
+    };
+
+fid = fopen(parametertxt,'w');
+fmtString = [repmat('%s\t',1,size(parameterlist,2)-1),'%s\n'];
+fprintf(fid,fmtString,parameterlist{:});
+fclose(fid);
+
+
+
+
+
