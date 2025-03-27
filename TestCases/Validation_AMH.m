@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'AMHchi-2025-03-26-16-38-23';
+filename = 'AMHchi-2025-03-26-17-42-12';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -35,11 +35,12 @@ load(stepFile)
 cc = hsv(6);
 t = (tspan(1):deltaT:tspan(2))';
     
+startpt = 0;
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 % pltstep = 5*int64(1/deltaT);
 pltstep = max(TotIt/100,1);
 % pltstep = 1;
-startpt = 0;
+
 figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
 %     
 subplot(3,1,1)
@@ -70,7 +71,7 @@ subtitle({['\fontsize{20} Sampling Dynamics for ', num2str(N), ' nodes']
            ['\fontsize{20} Sampling particles = ', num2str(samplesize, '%0.2e')]
            ['\fontsize{20} \alpha_t = ', num2str(alphat, '%0.2e')]
            })
-legend(L,'Target',strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
+legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'eastoutside');
 
 
 % subplot(4,1,2)
