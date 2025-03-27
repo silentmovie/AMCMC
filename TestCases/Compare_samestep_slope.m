@@ -24,17 +24,22 @@ load(paiFile)
 
 [TotIter,~] = size(rhoODE);
 TotIt = 650;
+startpt = 0;
+pltstep = max(TotIt/200,1);
 
 t = (tspan(1):deltaT:tspan(2)*TotIt/TotIter)';
+halftime = 40;
+twothirdtime = 50;
+iteration = (0:pltstep:TotIt-1);
 
-startpt = 0;
+
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 % pltstep = 5*int64(1/deltaT);
 
-pltstep = max(TotIt/200,1);
+
 
 figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
-
+hold on;
 plot((0:pltstep:TotIt-1),-0.5*log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-')
 plot((0:pltstep:TotIt-1),-log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-.')
 
@@ -42,9 +47,9 @@ errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the differ
 logErrorODE = log10(errorODE);
 errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
 logErrorJump = log10(errorJump);
-minMH = [min(logErrorODE),min(logErrorJump)]
+% minMH = [min(logErrorODE),min(logErrorJump)]
 
-hold on;
+
 xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 plot((0:pltstep:TotIt-1),logErrorODE(1:pltstep:TotIt),'r-*')
 plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')
@@ -53,6 +58,11 @@ plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')
 % LegendPlot{1} = '\frac{1}{\sqrt{\text{sample size}}}';
 % LegendPlot{2} = 'MH-ode';
 % LegendPlot{3} = 'MH-jump';
+
+Poly1 = polyfit(t(t>halftime & t<twothirdtime),logErrorODE(t>halftime & t<twothirdtime),1);
+plot(t(t>halftime)/deltaT, Poly1(1)*t(t>halftime) + Poly1(2), 'y', 'LineWidth', 2)
+% Define the formula using LaTeX syntax
+formula1 = ['$log(\textrm{error}) = ', num2str(Poly1(1)), 't+(', num2str(Poly1(2)), ')$'];
 
 
 dataDir = fullfile(scriptDir, 'data', AMHfolder);
@@ -89,20 +99,14 @@ plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'b-^')
 % LegendPlot{4} = [parts{1},'-ode'];
 % LegendPlot{5} = [parts{1},'-jump'];
 
-
-
-twothirdtime = TotIt/3*2;
-iteration = (0:pltstep:TotIt-1);
-
-halftime = tspan(2)/2;
-P = polyfit(t(t>halftime & t<60),logErrorODE(t>halftime & t<60),1);
-plot(t(t>halftime)/deltaT, P(1)*t(t>halftime) + P(2), 'r', 'LineWidth', 2)
+Poly2 = polyfit(t(t>halftime & t<twothirdtime),logErrorODE(t>halftime & t<twothirdtime),1);
+plot(t(t>halftime)/deltaT, Poly2(1)*t(t>halftime) + Poly2(2), 'y', 'LineWidth', 2)
 % Define the formula using LaTeX syntax
-formula = ['$log(\textrm{error}) = ', num2str(P(1)), 't+(', num2str(P(2)), ')$'];
+formula2 = ['$log(\textrm{error}) = ', num2str(Poly2(1)), 't+(', num2str(Poly2(2)), ')$'];
 
 LegendPlot = legend('$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$', ...
-                    '\textrm{MH-ode}','\textrm{MH-jump}',[parts{1},'-ode'],[parts{1},'-jump'], ...
-                    formula2);
+                    '\textrm{MH-ode}','\textrm{MH-jump}', formula1, ...
+                    [parts{1},'-ode'],[parts{1},'-jump'], formula2);
 set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'east'); %'eastoutside'
 set(LegendPlot,'FontName', 'Helvetica')
 
