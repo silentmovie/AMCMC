@@ -1,6 +1,6 @@
 *.pyc
 *.egg*
-.asv
+*.asv
 build
 .vscode
 .DS_Store
