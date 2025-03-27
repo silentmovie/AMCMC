@@ -8,7 +8,7 @@ close all;
 N = 3;                                        % num of states
 seed = 5;                                     % seed for random number generator with method 'twister'
 tspan = [0,100];                                % total time span
-deltaT = 1e-1;                                % time stepsize
+deltaT = 1e-2;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
 halftime = tspan(2)/2;
 t = [tspan(1):deltaT:tspan(2)]';
