@@ -1,4 +1,4 @@
-function [rhohist,psihist, Ham, effSteps,alphathist]=Iter_AMHFisher(pai,rho0,Q,psi0,alphat,tspan,deltaT,mode)
+function [rhohist,psihist, Ham, effSteps,alphathist]=Iter_Fisher(pai,rho0,Q,psi0,alphat,tspan,deltaT,mode)
 
 %%% Initialization
 %% Data structure:

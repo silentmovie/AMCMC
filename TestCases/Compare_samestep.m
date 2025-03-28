@@ -5,8 +5,8 @@ close all;
 % Get the directory of the current script
 scriptDir = fileparts(mfilename('fullpath'));
 
-MHfolder = 'MH-2025-03-26-18-19-45-C3';
-AMHfolder = 'AMHchi-2025-03-26-18-17-23-C3';
+MHfolder = 'MH-2025-03-27-16-44-35';
+AMHfolder = 'AMHchi-2025-03-27-16-44-54';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -23,7 +23,7 @@ load(paiFile)
 % TotIt is the total iterations used for plot
 
 [TotIter,~] = size(rhoODE);
-TotIt = 6500;
+TotIt = 650;
 startpt = 0;
 pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations

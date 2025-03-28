@@ -6,7 +6,7 @@ close all;
 %%% Initialization
 
 N = 3;                                        % num of states
-seed = 25569;                                     % seed for random number generator with method 'twister'
+seed = 2596;                                     % seed for random number generator with method 'twister'
 tspan = [0,100];                                % total time span
 deltaT = 1e-1;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
@@ -17,7 +17,7 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 [pai, Qrow, minEig] = ID_Cn(seed, N);
 
-samplesize = 1e6;                              % total particle numbers
+samplesize = 1e2;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0
