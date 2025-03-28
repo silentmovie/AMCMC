@@ -17,7 +17,6 @@ effSteps = deltaT*ones(TotIt+1,1);
 alphathist = alphat*ones(TotIt+1,1);
 
 
-
 %% Initial Data           
 rhohist(1,:) = rho0;
 psihist(1,:) = psi0;
@@ -39,7 +38,7 @@ for  j= 2:(TotIt+1)
         j
     end
     
-    % warm-stary by MH
+    % warm-stary by MH, psihist(j)=-rhohist(j,:)./pai
     if deltaT*double(j) <=0
        
        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
