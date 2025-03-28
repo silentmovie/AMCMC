@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'AMHchi-2025-03-26-18-23-38';
+filename = 'chi-2025-03-26-18-23-38-C3';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -30,21 +30,22 @@ load(stepFile)
 
 [TotIt,~] = size(rhoODE);
 
-% TotIt =;
+TotIt =650;
 
-cc = hsv(6);
+cc = hsv(60);
 t = (tspan(1):deltaT:tspan(2))';
     
 startpt = 0;
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 % pltstep = 5*int64(1/deltaT);
-TotIt=650;
-pltstep = max(TotIt/200,1);
+% TotIt=650;
+pltstep = max(TotIt/100,1);
 % pltstep = 1;
 
-figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
+% figure('Renderer', 'painters', 'Position', [10 10 600 600])
+figure('Renderer', 'painters', 'Position', [10 10 700 1200])
 %     
-subplot(3,1,1)
+subplot(4,1,1)
 
 L = zeros(3,1);
 L(1) = plot(0,nan,'k.');
@@ -58,9 +59,9 @@ for state = 1:3
     % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
     % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');
     % plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','^')
-    plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(2*j-1,:), 'marker','.')
-    plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(2*j-1,:),'marker','*');
-    plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(2*j-1,:),'marker','^')
+    plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(10*j+20,:), 'marker','.')
+    plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','*');
+    plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','^')
 end
 
 hold off;
@@ -69,8 +70,7 @@ hold off;
 xlabel(['Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 ylabel('Density')
 subtitle({ ['\fontsize{20} Sampling particles M = ', num2str(samplesize, '%0.2e'), ' distributed in ', num2str(N), ' nodes']
-           ['\fontsize{20} \gamma(t) = ', num2str(alphat, '%0.2e')]
-           })
+         })
 legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'east');
 
 
@@ -101,15 +101,15 @@ legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',2
 % legend(L,strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13);
 % 
 % 
-subplot(3,1,2)
+subplot(4,1,2)
 hold on;
-plot((startpt:pltstep:TotIt-1),log10(HamODE(startpt+1:pltstep:TotIt)),'marker','*')
-plot((startpt:pltstep:TotIt-1),log10(HamJump(startpt+1:pltstep:TotIt)),'marker','^')
+plot((startpt:pltstep:TotIt-1),log10(HamODE(startpt+1:pltstep:TotIt)),'b-*')
+plot((startpt:pltstep:TotIt-1),log10(HamJump(startpt+1:pltstep:TotIt)),'b-^')
 legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'east');
 hold off;
 subtitle('Decay of log10(Hamiltonian)', 'fontsize',20)
 
-% subplot(3,1,3)
+% subplot(4,1,3)
 % 
 % errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
 % logErrorODE = log10(errorODE);
@@ -146,14 +146,18 @@ subtitle('Decay of log10(Hamiltonian)', 'fontsize',20)
 % legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',13, 'Location', 'eastoutside');
 % subtitle(['log(p/pi)+psi'])
 
-% subplot(5,1,5)
-% plot((0:1200),alphatODE(1:1201))
-% subtitle('alphat')
-
-subplot(3,1,3)
+subplot(4,1,3)
 hold on;
-plot((1:pltstep:TotIt-1),StepODE(2:pltstep:TotIt),'marker','*')
-plot((1:pltstep:TotIt-1),StepJump(2:pltstep:TotIt),'marker','^')
+plot((1:1:TotIt-1),alphatODE(2:1:TotIt),'b-*')
+plot((1:1:TotIt-1),alphatJump(2:1:TotIt),'b-^')
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'east');
+hold off;
+subtitle(['\fontsize{20} Damping parameter \gamma(t) = ', num2str(alphat, '%0.2e')])
+
+subplot(4,1,4)
+hold on;
+plot((1:1:TotIt-1),StepODE(2:1:TotIt),'b-*')
+plot((1:1:TotIt-1),StepJump(2:1:TotIt),'b-^')
 legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'east');
 ylim([0.2*deltaT,5*deltaT])
 hold off;

@@ -6,7 +6,7 @@ close all;
 %%% Initialization
 
 N = 3;                                        % num of states
-seed = 25569;                                     % seed for random number generator with method 'twister'
+seed = 2596;                                     % seed for random number generator with method 'twister'
 tspan = [0,100];                                % total time span
 deltaT = 1e-1;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
@@ -19,7 +19,7 @@ method = 'AMHchi';                             % method from different theta_{ij
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 [pai, Qrow, minEig] = ID_Cn(seed, N);
 
-samplesize = 1e6;                              % total particle numbers
+samplesize = 1e2;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0
@@ -41,8 +41,8 @@ funJump = str2func(['Iter_',method,'jump']);
 for alphat = 2*sqrt(-minEig)        % damping parameter
      
 
-    [rhoODE,psiODE,HamODE, StepODE,alphatODE] = Iter_AMHchi(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
-    [rhoJump,psiJump,HamJump, StepJump,alphatJump] = Iter_AMHchijump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
+    [rhoODE,psiODE,HamODE, StepODE,alphatODE] = Iter_chi(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
+    [rhoJump,psiJump,HamJump, StepJump,alphatJump] = Iter_chijump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
 
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');

@@ -1,4 +1,4 @@
-function [rhohist, psihist, Ham, effSteps, alphathist] = Iter_AMHFisherjump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
+function [rhohist, psihist, Ham, effSteps, alphathist] = Iter_Fisherjump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
 
 N = length(pai);
 

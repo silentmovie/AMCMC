@@ -1,4 +1,4 @@
-function [rhohist,psihist, Ham, effSteps,alphathist] = Iter_AMHchijump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
+function [rhohist,psihist, Ham, effSteps,alphathist] = Iter_chijump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
 
 %%% Initialization
 %% Data structure:
