@@ -43,7 +43,7 @@ pltstep = max(TotIt/100,1);
 % pltstep = 1;
 
 % figure('Renderer', 'painters', 'Position', [10 10 600 600])
-figure('Renderer', 'painters', 'Position', [10 10 700 1200])
+figure('Renderer', 'painters', 'Position', [10 10 700 1400])
 %     
 subplot(4,1,1)
 
@@ -67,11 +67,10 @@ end
 hold off;
 % xlim([startpt,TotIt-1])
 % ylim([0,1])
-xlabel(['Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 ylabel('Density')
 subtitle({ ['\fontsize{20} Sampling particles M = ', num2str(samplesize, '%0.2e'), ' distributed in ', num2str(N), ' nodes']
          })
-legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'east');
+legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'best');
 
 
 % subplot(4,1,2)
@@ -105,7 +104,7 @@ subplot(4,1,2)
 hold on;
 plot((startpt:pltstep:TotIt-1),log10(HamODE(startpt+1:pltstep:TotIt)),'b-*')
 plot((startpt:pltstep:TotIt-1),log10(HamJump(startpt+1:pltstep:TotIt)),'b-^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'east');
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'best');
 hold off;
 subtitle('Decay of log10(Hamiltonian)', 'fontsize',20)
 
@@ -150,7 +149,7 @@ subplot(4,1,3)
 hold on;
 plot((1:1:TotIt-1),alphatODE(2:1:TotIt),'b-*')
 plot((1:1:TotIt-1),alphatJump(2:1:TotIt),'b-^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'east');
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'best');
 hold off;
 subtitle(['\fontsize{20} Damping parameter \gamma(t) = ', num2str(alphat, '%0.2e')])
 
@@ -158,10 +157,12 @@ subplot(4,1,4)
 hold on;
 plot((1:1:TotIt-1),StepODE(2:1:TotIt),'b-*')
 plot((1:1:TotIt-1),StepJump(2:1:TotIt),'b-^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'east');
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'best');
 ylim([0.2*deltaT,5*deltaT])
 hold off;
 subtitle('Effective stepsize', 'fontsize',20)
+xlabel(['Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
+
 % 
 % subplot(6,1,6)
 % hold on;

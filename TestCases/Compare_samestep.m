@@ -5,8 +5,8 @@ close all;
 % Get the directory of the current script
 scriptDir = fileparts(mfilename('fullpath'));
 
-MHfolder = 'MH-2025-03-27-16-44-35';
-AMHfolder = 'AMHchi-2025-03-27-16-44-54';
+MHfolder = 'MH-2025-03-26-18-19-45-C3';
+AMHfolder = 'chi-2025-03-26-18-17-23-C3';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -23,7 +23,7 @@ load(paiFile)
 % TotIt is the total iterations used for plot
 
 [TotIter,~] = size(rhoODE);
-TotIt = 650;
+TotIt = 6500;
 startpt = 0;
 pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
@@ -31,7 +31,7 @@ pltstep = max(TotIt/200,1);
 
 
 
-figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
+figure('Renderer', 'painters', 'Position', [10 10 600 400])
 hold on;
 
 errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
@@ -39,7 +39,7 @@ logErrorODE = log10(errorODE);
 errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
 logErrorJump = log10(errorJump);
 
-
+xlim([0,7000])
 xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 plot((0:pltstep:TotIt-1),logErrorODE(1:pltstep:TotIt),'r-*')
 plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')
@@ -90,7 +90,7 @@ plot((0:pltstep:TotIt-1),-log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-.')
 LegendPlot = legend('\textrm{MH-ode}','\textrm{MH-jump}',  ...
                     [parts{1},'-ode'],[parts{1},'-jump'], ...
                     '$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$');
-set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'east'); %'eastoutside'
+set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'best'); %'eastoutside'
 set(LegendPlot,'FontName', 'Helvetica')
 
 
@@ -99,7 +99,7 @@ set(LegendPlot,'FontName', 'Helvetica')
 hold off;
 
 
-set(findall(gcf, 'Type', 'axes'), 'FontSize', 20);
+set(findall(gcf, 'Type', 'axes'), 'FontSize', 24);
 figFile = fullfile(dataDir, 'Compare.png');
 saveas(gcf, figFile)
 
