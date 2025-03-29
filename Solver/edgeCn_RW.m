@@ -1,6 +1,7 @@
 function out=edgeCn_RW(v)
 
-%%%
+%%% Generate candidate kernel for Cn graph by random walk.
+%
 % Input: edge sets, weight sets. Now this code does not work with input, as
 % we deal with Cn graph.
 % Output: candidate kernel matrix q_{ij} by random walk.
