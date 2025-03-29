@@ -24,7 +24,7 @@ psiCur = psi0;
 % F(p) on table 2 row 4 col 1 
 Ham(1) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));
 % first term in eq:Ham-func on Page 4
-Ham(1) = Ham(1) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psi0).*Q));
+Ham(1) = Ham(1) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
 % NaN for the dummy value,
 effSteps(1) = NaN;          
 alphathist(1) = NaN;         
@@ -41,8 +41,8 @@ for j=2:(TotIt+1)
 
     % If create infeasible value for kCur or psiCur, then end the iteration and save all previous iterations
     if any(kCur<0) || any(isinf(psiCur)) || any(isnan(kCur))
-        warning('something wrong')
-        j
+        
+        warning('something wrong in (%d)-th iteration',j)
         pause
 
         rhohist = rhohist(1:(j-1),1:N);
@@ -101,7 +101,7 @@ for j=2:(TotIt+1)
     while any(negative_part(:) < 0)
 
         % enable in debug mode
-        % warning('negative part in (%d)-th iteration', j)
+        warning('negative part in (%d)-th iteration', j)
         % find(negative_part(:) < 0)
         
         % pause
@@ -112,8 +112,7 @@ for j=2:(TotIt+1)
     
     % eq:AMH-kCur on page 8.
     % rho_t = rhohist(j-1, :) + tmp_deltaT * sum(diag(pai) * psidifference_mat(psiCur) .* logmean(rhohist(j-1, :)./pai) .* Q, 2)';
-    kCur = kCur + psiCur*(tmp_deltaT*LM);     
-    
+    kCur = kCur + psiCur*(tmp_deltaT*LM);   
     % eq:eQ1 on page 7, replace the log k_i by Table 2 Row 4 Col 2
 
     %% restart  
