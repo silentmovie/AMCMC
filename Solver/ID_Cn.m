@@ -10,8 +10,8 @@ pai = sort(pai,'descend');      % target distribution (not necessary to be 'desc
 % pai = [0.456913643618358	0.355387771485700	0.187698584895942];
 % rho0 = [0.222092426514290	0.388226387575271	0.389681185910440];
 
-Q = QMH(pai);
-edge = edgeCn(pai);
+Q = AcceptReject_RW(pai);
+edge = edgeCn_RW(pai);
 Q = Q.*edge;
 Qrow = RowSumZero(Q)
 
