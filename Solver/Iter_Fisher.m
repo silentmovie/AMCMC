@@ -75,7 +75,7 @@ for j=2:(TotIt+1)
     % design for damping term alpha(t)
     % if deltaT*double(j) > 0
         % alphathist(j) = alphat*log(deltaT*double(j));
-    if deltaT*double(j) < exp(1)
+    if deltaT*double(j) > exp(1)
         %     alphathist(j) = alphat;
         % else
             % alphathist(j) = alphat/log(deltaT*double(j)+30);

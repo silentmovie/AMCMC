@@ -5,8 +5,8 @@ close all;
 % Get the directory of the current script
 scriptDir = fileparts(mfilename('fullpath'));
 
-MHfolder = 'MH-2025-03-26-18-19-45-C3';
-AMHfolder = 'chi-2025-03-26-18-17-23-C3';
+MHfolder = 'MH-2025-03-28-23-46-35-twocycle-figure3';
+AMHfolder = 'Fisher-2025-03-29-00-39-32';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -23,7 +23,7 @@ load(paiFile)
 % TotIt is the total iterations used for plot
 
 [TotIter,~] = size(rhoODE);
-TotIt = 6500;
+TotIt = TotIter;
 startpt = 0;
 pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
@@ -39,7 +39,7 @@ logErrorODE = log10(errorODE);
 errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
 logErrorJump = log10(errorJump);
 
-xlim([0,7000])
+% xlim([0,100])
 xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 plot((0:pltstep:TotIt-1),logErrorODE(1:pltstep:TotIt),'r-*')
 plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')

@@ -24,10 +24,12 @@ samplesize = 1e4;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0
-rho0 = rand(1,N);
+% rho0 = rand(1,N);
+rho0 = ones(1,N);
 rho0 = rho0/sum(rho0);
 
-psi0 = -log(rho0./pai);
+psi0 = randn(1,N);
+% psi0 = -log(rho0./pai);
 % psi0 = rand(1,N)-0.5;
 % psi0 = psi0/sum(psi0);
 % psi0 = zeros(1,N);
