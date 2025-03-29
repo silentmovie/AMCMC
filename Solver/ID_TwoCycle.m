@@ -13,7 +13,7 @@ pai = [4/27 4/27 4/27 1/18 1/18 4/27 4/27 4/27];
 degree = [2 2 3 2 2 3 2 2];
 
 Q = AcceptReject_RW(pai,degree);
-edge = edgetTwoCycle_RW(degree);
+edge = edgeTwoCycle_RW(degree);
 Q = Q.*edge;
 Qrow = RowSumZero(Q)
 
