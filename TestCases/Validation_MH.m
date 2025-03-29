@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'MH-2025-03-26-18-03-26';
+filename = 'MH-2025-03-28-23-46-35';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -28,7 +28,7 @@ load(paiFile)
 
 % TotIt =;
 
-cc = hsv(6);
+cc = hsv(16);
 t = (tspan(1):deltaT:tspan(2))';
     
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
@@ -45,7 +45,7 @@ L(2) = plot(0,nan,'k*');
 L(3) = plot(0,nan,'k^');
 
 j=0;
-for state = 1:3
+for state = 2:4
     j = j+1;
     % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
     % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');

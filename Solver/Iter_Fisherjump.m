@@ -78,12 +78,13 @@ for j = 2:(TotIt+1)
     end
 
 
-    if deltaT*double(j) > 0
-        % alphathist(j) = alphat*log(deltaT*double(j));
-        % if deltaT*double(j) < exp(1)
+    % if deltaT*double(j) > 0
+    %     % alphathist(j) = alphat*log(deltaT*double(j));
+    if deltaT*double(j) < exp(1)
         %     alphathist(j) = alphat;
         % else
-            alphathist(j) = alphat/log(deltaT*double(j)+30);
+        alphathist(j) = 3.1/log(deltaT*double(j));
+            % alphathist(j) = alphat/log(deltaT*double(j)+30);
         % end
         % alphathist(j) = alphat*log(deltaT*double(j)); 
     end
