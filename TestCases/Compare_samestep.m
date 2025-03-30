@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 MHfolder = 'MH-2025-03-28-23-46-35-twocycle-figure3';
-AMHfolder = 'Fisher-2025-03-29-00-39-32';
+AMHfolder = 'Fisher-2025-03-30-01-01-02';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -24,6 +24,7 @@ load(paiFile)
 
 [TotIter,~] = size(rhoODE);
 TotIt = TotIter;
+% TotIt = 100;
 startpt = 0;
 pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
@@ -31,7 +32,7 @@ pltstep = max(TotIt/200,1);
 
 
 
-figure('Renderer', 'painters', 'Position', [10 10 600 400])
+figure('Renderer', 'painters', 'Position', [10 10 700 550])
 hold on;
 
 errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference

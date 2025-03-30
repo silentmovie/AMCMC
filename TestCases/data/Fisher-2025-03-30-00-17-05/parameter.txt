@@ -1,0 +1,7 @@
+N = 8
+seed = 2596
+tspan = 0  100
+deltaT = 1.00e-01
+samplesize = 1.00e+04
+ini_alphat = 6.20e-01
+minEig = -3.79e-02

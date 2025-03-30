@@ -5,10 +5,10 @@ close all;
 
 %%% Initialization
 
-N = 8;                                        % num of states
+N = 625;                                        % num of states
 seed = 2596;                                     % seed for random number generator with method 'twister'
-tspan = [0,100];                                % total time span
-deltaT = 1e-1;                                % time stepsize
+tspan = [0,1000];                                % total time span
+deltaT = 1e-2;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
 halftime = tspan(2)/2;
 t = [tspan(1):deltaT:tspan(2)]';
@@ -18,18 +18,19 @@ method = 'Fisher';                             % method from different theta_{ij
 
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
-[pai, Qrow, minEig] = ID_TwoCycle(seed, N);
-
-samplesize = 1e4;                              % total particle numbers
+% [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
+[pai, Qrow, minEig] =ID_MGaussian(seed, N);
+samplesize = 484314;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
 rho0 = ones(1,N);
 rho0 = rho0/sum(rho0);
-
-psi0 = randn(1,N);
-% psi0 = -log(rho0./pai);
+% rho0 =[0.138558909613056	0.138558909613056	0.150907613766526	0.0719745670073633	0.0719745670073633	0.150907613766526	0.138558909613056	0.138558909613056];
+% psi0 =[0.0669171987353261	0.0669171987353261	-0.0184550461125071	-0.258929299518705	-0.258929299518705	-0.0184550461125071	0.0669171987353260	0.0669171987353260];
+% psi0 = randn(1,N);
+psi0 = -log(rho0./pai);
 % psi0 = rand(1,N)-0.5;
 % psi0 = psi0/sum(psi0);
 % psi0 = zeros(1,N);
@@ -40,7 +41,7 @@ psi0 = randn(1,N);
 funODE = str2func(['Iter_',method]);
 funJump = str2func(['Iter_',method,'jump']);
 
-for alphat = 0.5        % damping parameter
+for alphat = 0.002       % damping parameter
      
 
     [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
