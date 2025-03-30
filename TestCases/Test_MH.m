@@ -17,7 +17,7 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
 [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
-samplesize = 1e4;                              % total particle numbers
+samplesize = 1e6;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0

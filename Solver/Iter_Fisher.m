@@ -54,7 +54,7 @@ for j=2:(TotIt+1)
     end
     
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-    if deltaT*double(j) <= 0
+    if deltaT*double(j) < 30
     % if double(j) <= 30
        % if j>2 && Ham(j-1)>Ham(j-2)
        %    warning('Ham increasing')
@@ -75,19 +75,22 @@ for j=2:(TotIt+1)
     % design for damping term alpha(t)
     % if deltaT*double(j) > 0
         % alphathist(j) = alphat*log(deltaT*double(j));
-    if deltaT*double(j) > exp(1)
-        %     alphathist(j) = alphat;
-        % else
-            % alphathist(j) = alphat/log(deltaT*double(j)+30);
-        % elseif deltaT*double(j) < 500
-        %     alphathist(j) = alphat/log(deltaT*double(j));
-        % else
-        %     alphathist(j) = alphathist(j-1);
+    if deltaT*double(j) >= 30
+    %     %     alphathist(j) = alphat;
+    %     % else
+            alphathist(j) = alphat/log(deltaT*double(j));
+    %     % elseif deltaT*double(j) < 500
+    %     %     alphathist(j) = alphat/log(deltaT*double(j));
+    %     % else
+    %     %     alphathist(j) = alphathist(j-1);
+    %     % end
+    %     % alphathist(j) = alphat*log(deltaT*double(j)); 
+    %     alphathist(j) = 3/(deltaT*double(j)-2);
+        % if alphathist(j) <= 0.6
+        %     alphathist(j) = 0.6;
         % end
-        % alphathist(j) = alphat*log(deltaT*double(j)); 
-        alphathist(j) = 3.1/log(deltaT*double(j));
     end
-    % alphathist(j) = alphat;
+    % alphathist(j) = alphat*tanh(deltaT*double(j));
     
     % eq:AMH-kCur on page 8. This equation is the same if one fix logmean.
     LM = logmean(kCur);

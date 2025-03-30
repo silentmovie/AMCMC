@@ -60,8 +60,8 @@ for j = 2:(TotIt+1)
     end
 
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-    if deltaT*double(j) <= 0
-    % if double(j) <= 30
+    if deltaT*double(j) < 30
+        % if double(j) <= 30
         % if j>2 && Ham(j-1)>Ham(j-2)
         %    warning('Ham increasing')
         %    j
@@ -80,15 +80,18 @@ for j = 2:(TotIt+1)
 
     % if deltaT*double(j) > 0
     %     % alphathist(j) = alphat*log(deltaT*double(j));
-    if deltaT*double(j) > exp(1)
-        %     alphathist(j) = alphat;
-        % else
-        alphathist(j) = 3.1/log(deltaT*double(j));
-            % alphathist(j) = alphat/log(deltaT*double(j)+30);
+    if deltaT*double(j) >= 30
+    %     %     alphathist(j) = alphat;
+    %     % else
+        alphathist(j) = alphat/log(deltaT*double(j));
+        % if alphathist(j) <= 0.6
+        %     alphathist(j) = 0.6;
         % end
-        % alphathist(j) = alphat*log(deltaT*double(j)); 
+    %         % alphathist(j) = alphat/log(deltaT*double(j)+30);
+    %     % end
+    %     % alphathist(j) = alphat*log(deltaT*double(j)); 
     end
-
+    % alphathist(j) = alphat*tanh(deltaT*double(j));
 
     out = zeros(N,N);
     P = Q.*(PNpsi(psihist(j-1,:)));
@@ -163,11 +166,15 @@ for j = 2:(TotIt+1)
     else
         rhohist(j,:) = current/sum(current);
         kCur = rhohist(j,:)./pai;
-        psiCur = psiCur+ tmp_deltaT*(...
-            -alphathist(j)*psiCur...
-            - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
-            - 0.5* sum(Q.*psidiffsquare(psiCur).*omega(kCur),2)'...
-            );
+        % psiCur = psiCur+ tmp_deltaT*(...
+        %     -alphathist(j)*psiCur...
+        %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
+        %     - 0.5* sum(Q.*psidiffsquare(psiCur).*omega(kCur),2)'...
+        %     );
+        psiCur = psiCur + tmp_deltaT*(...
+        -alphathist(j)*psiCur...
+        - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*omega(kCur)).*Q, 2)'...
+                );
 
 
     end
