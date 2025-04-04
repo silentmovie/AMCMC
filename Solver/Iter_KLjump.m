@@ -36,7 +36,7 @@ for j = 2:TotIt+1
     
     current = sum(out,1);
     rhohist(j,:) = current/samplesize;
-    psi = psi + deltaT*(-alphat*psi -log(k) - 0.5* sum(Q.*psidiffsquare(psi).*omega(k),2)');
+    psi = psi + deltaT*(-alphat*psi -log(k) - 0.5* sum(Q.*psidiffsquare(psi).*partialTheta(k),2)');
     k = rhohist(j,:)./pai;
     if any(k<0) | any(imag(psi)~=0)
         k

@@ -1,6 +1,6 @@
-function out=omega(k)
+function out=partialTheta(k)
 
-% generate weighted term w.r.t k in the psi equation
+% generate weighted term ( log(k(i)/k(j)) - 1 + k(j)/k(i) ) / (log(k(i)/k(j)))^2
 
 N = length(k);
 out = zeros(N,N);

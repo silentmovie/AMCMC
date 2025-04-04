@@ -125,8 +125,8 @@ for j=2:(TotIt+1)
         alphathist(j) = -1;
     else
         % Gauss-Seidel iteration
-        psiCur = psiCur + deltaT*(-alphathist(j)*psiCur -log(kCur) - 0.5* sum(Q.*psidiffsquare(psiCur).*omega(kCur),2)');
-%     psi = psi + deltaT*(-alphat*psi -2*pai*logdiff(tmp)*Q./tmp - 0.5* sum(Q.*psidiffsquare(psi).*omega(tmp),2)');
+        psiCur = psiCur + deltaT*(-alphathist(j)*psiCur -log(kCur) - 0.5* sum(Q.*psidiffsquare(psiCur).*partialTheta(kCur),2)');
+%     psi = psi + deltaT*(-alphat*psi -2*pai*logdiff(tmp)*Q./tmp - 0.5* sum(Q.*psidiffsquare(psi).*partialTheta(tmp),2)');
         if any(isnan(psiCur))
             j
             find(isnan(psiCur)==1)

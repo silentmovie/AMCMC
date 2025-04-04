@@ -14,7 +14,7 @@ Ham = zeros(TotIt+1,1);
 
 % effSteps(1) and alphathist(1) are dummy.
 effSteps = deltaT*ones(TotIt+1,1);
-alphathist = alphat*ones(TotIt+1,1);
+alphathist =  0.1141*ones(TotIt+1,1);
 
 %% Initial Data
 rhohist(1,:) = rho0;
@@ -78,17 +78,17 @@ for j=2:(TotIt+1)
     if deltaT*double(j) >= 30
     %     %     alphathist(j) = alphat;
     %     % else
-            alphathist(j) = alphat/log(deltaT*double(j));
+            % alphathist(j) = alphat/log(deltaT*double(j));
     %     % elseif deltaT*double(j) < 500
     %     %     alphathist(j) = alphat/log(deltaT*double(j));
     %     % else
     %     %     alphathist(j) = alphathist(j-1);
     %     % end
     %     % alphathist(j) = alphat*log(deltaT*double(j)); 
-    %     alphathist(j) = 3/(deltaT*double(j)-2);
-        % if alphathist(j) <= 0.6
-        %     alphathist(j) = 0.6;
-        % end
+        alphathist(j) = 0.1141/(deltaT*double(j));
+        if alphathist(j) <= alphat
+            alphathist(j) = alphat;
+        end
     end
     % alphathist(j) = alphat*tanh(deltaT*double(j));
     
@@ -97,7 +97,6 @@ for j=2:(TotIt+1)
     LM = LM.*(-Q);
     LM = RowSumZero(LM);
     LM = LM';
-    
     
     % adjust effective steps
     tmp_deltaT = deltaT;
@@ -130,7 +129,7 @@ for j=2:(TotIt+1)
         % Gauss-Seidel iteration
         psiCur = psiCur + tmp_deltaT*(...
                 -alphathist(j)*psiCur...
-                - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*omega(kCur)).*Q, 2)'...
+                - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*partialTheta(kCur)).*Q, 2)'...
                );
         if any(isnan(psiCur))
             j

@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'chi-2025-03-26-18-23-38-C3';
+filename = 'Fisher-2025-03-30-04-54-02';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -30,16 +30,16 @@ load(stepFile)
 
 [TotIt,~] = size(rhoODE);
 
-TotIt =650;
+% TotIt =650;
 
 cc = hsv(60);
 t = (tspan(1):deltaT:tspan(2))';
     
 startpt = 0;
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
-% pltstep = 5*int64(1/deltaT);
+pltstep = 5*int64(1/deltaT);
 % TotIt=650;
-pltstep = max(TotIt/100,1);
+% pltstep = max(TotIt/100,1);
 % pltstep = 1;
 
 % figure('Renderer', 'painters', 'Position', [10 10 600 600])
@@ -47,31 +47,45 @@ figure('Renderer', 'painters', 'Position', [10 10 700 1400])
 %     
 subplot(4,1,1)
 
-L = zeros(3,1);
-L(1) = plot(0,nan,'k.');
+% L = zeros(3,1);
+% L(1) = plot(0,nan,'k.');
+% hold on;
+% L(2) = plot(0,nan,'k*');
+% L(3) = plot(0,nan,'k^');
+% 
+% j=0;
+% for state = 1:3
+%     j = j+1;
+%     % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
+%     % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');
+%     % plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','^')
+%     plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(10*j+20,:), 'marker','.')
+%     plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','*');
+%     plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','^')
+% end
+% 
+% hold off;
+% % xlim([startpt,TotIt-1])
+% % ylim([0,1])
+% ylabel('Density')
+% subtitle({ ['\fontsize{20} Sampling particles M = ', num2str(samplesize, '%0.2e'), ' distributed in ', num2str(N), ' nodes']
+%          })
+% legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'best');
+
+
+% subplot(4,1,3)
+% 
+errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorODE = log10(errorODE);
+errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorJump = log10(errorJump);
 hold on;
-L(2) = plot(0,nan,'k*');
-L(3) = plot(0,nan,'k^');
-
-j=0;
-for state = 1:3
-    j = j+1;
-    % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
-    % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');
-    % plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','^')
-    plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(10*j+20,:), 'marker','.')
-    plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','*');
-    plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','^')
-end
-
+plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
+plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
+plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'eastoutside');
 hold off;
-% xlim([startpt,TotIt-1])
-% ylim([0,1])
-ylabel('Density')
-subtitle({ ['\fontsize{20} Sampling particles M = ', num2str(samplesize, '%0.2e'), ' distributed in ', num2str(N), ' nodes']
-         })
-legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'best');
-
+subtitle(['\fontsize{20} t-log(error)'])
 
 % subplot(4,1,2)
 % 

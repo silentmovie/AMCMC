@@ -1,4 +1,4 @@
-function [pai,Qrow,minEig] = ID_MGaussian(seed,N)
+function [pai,Qrow,minEigQrow] = ID_MGaussian(seed,N)
 
 
 %%% Generate multi-mode Gaussian on lattices
@@ -18,10 +18,10 @@ pai = reshape(pai,1,N);
 Q = AcceptReject_RW(pai);
 edge = edgeLattice_RW(pai);
 Q = Q.*edge;
-Qrow = RowSumZero(Q)
+Qrow = RowSumZero(Q);
 
 Eigenvalue = eig(Qrow);
-minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
+minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
 
 % check if detailed balance:
 DB = diag(pai)*Qrow;

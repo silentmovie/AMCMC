@@ -1,6 +1,6 @@
-function out=edgeTwoCycle_RW(degree)
+function out=edgeTwoLoop_RW(degree)
 
-%%% Generate candidate kernel for TwoCycle Graph by random walk
+%%% Generate candidate kernel for TwoLoop Graph by random walk
 %
 % Input: degree of nodes in 1*n vector,as we deal with TwoCycle graph.
 %

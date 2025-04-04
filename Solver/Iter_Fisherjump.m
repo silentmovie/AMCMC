@@ -15,7 +15,7 @@ edges = 0.5:1:(N+0.5);           % edges for hiscounts function
 
 % effSteps(1) and alphathist(1) are dummy.
 effSteps = deltaT*ones(TotIt+1,1);
-alphathist = alphat*ones(TotIt+1,1);
+alphathist =  0.1141*ones(TotIt+1,1);
 
 %% Initial Data
 rhohist(1,:) = rho0;
@@ -83,10 +83,11 @@ for j = 2:(TotIt+1)
     if deltaT*double(j) >= 30
     %     %     alphathist(j) = alphat;
     %     % else
-        alphathist(j) = alphat/log(deltaT*double(j));
-        % if alphathist(j) <= 0.6
-        %     alphathist(j) = 0.6;
-        % end
+        % alphathist(j) = alphat/log(deltaT*double(j));
+        alphathist(j) =  0.1141/(deltaT*double(j));
+        if alphathist(j) <= alphat
+            alphathist(j) = alphat;
+        end
     %         % alphathist(j) = alphat/log(deltaT*double(j)+30);
     %     % end
     %     % alphathist(j) = alphat*log(deltaT*double(j)); 
@@ -115,73 +116,85 @@ for j = 2:(TotIt+1)
     
     %%% restart method
 
-    %% restart by resampling
+    % restart by resampling
 
-    % tmpcurrent = zeros(1,N);
-    % while (any (tmpcurrent ==0))
-    %     parfor state = 1:N
-    %         % out is matrix of N*N
-    %         tmp = randsample(N, current(state), true, P(state,:))';
-    %         out(state,:) = histcounts(tmp, edges);
-    %         % out(state,:) = histcounts(tmp, edges.Value);
-    %     end
-    %     tmpcurrent = sum(out,1);
-    %     repeat = repeat + 1;
-    % end
-    % repeat = repeat -1;
-    % current = sum(out,1);
-    % rhohist(j,:) = current/samplesize;
-    % kCur = rhohist(j,:)./pai;
-    % psiCur = psiCur + tmp_deltaT*(...
-    %     -alphathist(j)*psiCur...
-    %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
-    %     - 0.5* sum(Q.*psidiffsquare(psiCur).*omega(kCur),2)'...
-    %     );
-
-    % psihist(j,:) = psiCur;
-    % Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
-    % Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
-    % warning('total repeated sampling = (%d)', repeat)
-
-
-    %% restart by MH
-    
-    parfor state = 1:N
-        % out is matrix of N*N
-        tmp = randsample(N, current(state), true, P(state,:))';
-        out(state,:) = histcounts(tmp, edges);
-        % out(state,:) = histcounts(tmp, edges.Value);
+    tmpcurrent = zeros(1,N);
+    while (any (tmpcurrent ==0))
+        parfor state = 1:N
+            % out is matrix of N*N
+            tmp = randsample(N, current(state), true, P(state,:))';
+            out(state,:) = histcounts(tmp, edges);
+            % out(state,:) = histcounts(tmp, edges.Value);
+        end
+        tmpcurrent = sum(out,1);
+        repeat = repeat + 1;
     end
+    repeat = repeat -1;
     current = sum(out,1);
-
-    if any(current==0)
-        current(current==0) = current(current==0) + 1;
-        
-        warning('add particles in (%d)-th iteration, total particle = (%d)', j, sum(current))
- 
-        rhohist(j,:) = current/sum(current);
-        kCur = rhohist(j,:)./pai;
-        psiCur = -log(kCur);
-        alphathist(j) = -1;
-    else
-        rhohist(j,:) = current/sum(current);
-        kCur = rhohist(j,:)./pai;
-        % psiCur = psiCur+ tmp_deltaT*(...
-        %     -alphathist(j)*psiCur...
-        %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
-        %     - 0.5* sum(Q.*psidiffsquare(psiCur).*omega(kCur),2)'...
-        %     );
-        psiCur = psiCur + tmp_deltaT*(...
+    rhohist(j,:) = current/samplesize;
+    kCur = rhohist(j,:)./pai;
+    psiCur = psiCur + tmp_deltaT*(...
         -alphathist(j)*psiCur...
-        - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*omega(kCur)).*Q, 2)'...
-                );
-
-
-    end
+        - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
+        - 0.5* sum(Q.*psidiffsquare(psiCur).*partialTheta(kCur),2)'...
+        );
 
     psihist(j,:) = psiCur;
     Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
     Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
+    warning('total repeated sampling = (%d)', repeat)
+
+
+    % %% restart by MH
+    % 
+    % parfor state = 1:N
+    %     % out is matrix of N*N
+    %     tmp = randsample(N, current(state), true, P(state,:))';
+    %     out(state,:) = histcounts(tmp, edges);
+    %     % out(state,:) = histcounts(tmp, edges.Value);
+    % end
+    % % futures = cell(N, 1);
+    % % for state = 1:N
+    % % % futures{state} = parfeval(@computeHist, 1, state, N, current, P, edges);
+    % %     futures{state} = parfeval(@computeHist, 1, state, N, current(state), P(state,:), edges);
+    % % 
+    % % end
+    % % 
+    % % % Collect results
+    % % for state = 1:N
+    % %     out(state, :) = fetchOutputs(futures{state});
+    % % end
+    % 
+    % current = sum(out,1);
+    % 
+    % if any(current==0)
+    %     current(current==0) = current(current==0) + 1;
+    % 
+    %     warning('add particles in (%d)-th iteration, total particle = (%d)', j, sum(current))
+    % 
+    %     rhohist(j,:) = current/sum(current);
+    %     kCur = rhohist(j,:)./pai;
+    %     psiCur = -log(kCur);
+    %     alphathist(j) = -1;
+    % else
+    %     rhohist(j,:) = current/sum(current);
+    %     kCur = rhohist(j,:)./pai;
+    %     % psiCur = psiCur+ tmp_deltaT*(...
+    %     %     -alphathist(j)*psiCur...
+    %     %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
+    %     %     - 0.5* sum(Q.*psidiffsquare(psiCur).*partialTheta(kCur),2)'...
+    %     %     );
+    %     psiCur = psiCur + tmp_deltaT*(...
+    %     -alphathist(j)*psiCur...
+    %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*partialTheta(kCur)).*Q, 2)'...
+    %             );
+    % 
+    % 
+    % end
+    % 
+    % psihist(j,:) = psiCur;
+    % Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
+    % Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
 
     % if Ham(j-1) > Ham(j-2)
     % 

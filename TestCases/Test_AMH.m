@@ -18,10 +18,12 @@ method = 'Fisher';                             % method from different theta_{ij
 
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
-% [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
-[pai, Qrow, minEig] =ID_MGaussian(seed, N);
+% [pai, Qrow, minEig] = ID_TwoLoop(seed, N);
+[pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
 samplesize = 484314;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
+2*sqrt(-minEigQrow)
+rayleigh = rayleigh(-diag(pai)*Qrow,pai)
 
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
@@ -41,12 +43,12 @@ psi0 = -log(rho0./pai);
 funODE = str2func(['Iter_',method]);
 funJump = str2func(['Iter_',method,'jump']);
 
-for alphat = 0.002       % damping parameter
+for alphat = 2*sqrt(rayleigh)       % damping parameter
      
-
+    
     [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
     [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
-
+    
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
     NewFolder = ['data/',method,'-',Date];
@@ -80,7 +82,7 @@ for alphat = 0.002       % damping parameter
     save(Qmat, 'Qrow');
     save(ODEmat, 'rhoODE', 'psiODE');
     save(paimat, 'pai');
-    save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize','alphat','minEig');
+    save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize','alphat','minEigQrow');
     
     save(Jumpmat, 'rhoJump', 'psiJump');
     save(Hammat, 'HamODE', 'HamJump');
@@ -102,7 +104,7 @@ for alphat = 0.002       % damping parameter
         ['deltaT = ' num2str(deltaT, '%0.2e')]
         ['samplesize = ' num2str(samplesize, '%0.2e')]
         ['ini_alphat = ' num2str(alphat, '%0.2e')]
-        ['minEig = ' num2str(minEig, '%0.2e')]
+        ['minEigQrow = ' num2str(minEigQrow, '%0.2e')]
         };
 
     fid = fopen(parametertxt,'w');

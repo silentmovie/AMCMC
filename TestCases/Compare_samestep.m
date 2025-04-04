@@ -5,8 +5,8 @@ close all;
 % Get the directory of the current script
 scriptDir = fileparts(mfilename('fullpath'));
 
-MHfolder = 'MH-2025-03-28-23-46-35-twocycle-figure3';
-AMHfolder = 'Fisher-2025-03-30-01-01-02';
+MHfolder = 'MH-2025-03-30-20-10-38';
+AMHfolder = 'Fisher-2025-03-31-13-30-16';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -26,13 +26,13 @@ load(paiFile)
 TotIt = TotIter;
 % TotIt = 100;
 startpt = 0;
-pltstep = max(TotIt/200,1);
+% pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
-% pltstep = 5*int64(1/deltaT);
+pltstep = 5*int64(1/deltaT);
 
 
 
-figure('Renderer', 'painters', 'Position', [10 10 700 550])
+figure('Renderer', 'painters', 'Position', [10 10 800 500])   %[10 10 700 550]
 hold on;
 
 errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
@@ -41,6 +41,7 @@ errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the diff
 logErrorJump = log10(errorJump);
 
 % xlim([0,100])
+% ylim([])
 xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 plot((0:pltstep:TotIt-1),logErrorODE(1:pltstep:TotIt),'r-*')
 plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')
@@ -85,13 +86,15 @@ plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'b-^')
 % LegendPlot{5} = [parts{1},'-jump'];
 
 plot((0:pltstep:TotIt-1),-0.5*log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-')
-plot((0:pltstep:TotIt-1),-log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-.')
+% plot((0:pltstep:TotIt-1),-log10(samplesize) + 0.0*(0:pltstep:TotIt-1),'k-.')
 
 
 LegendPlot = legend('\textrm{MH-ode}','\textrm{MH-jump}',  ...
                     [parts{1},'-ode'],[parts{1},'-jump'], ...
-                    '$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$');
-set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'best'); %'eastoutside'
+                    '$\log\frac{1}{\sqrt{M}}$');
+                    
+                    % '$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$');
+set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'eastoutside'); %'eastoutside'
 set(LegendPlot,'FontName', 'Helvetica')
 
 

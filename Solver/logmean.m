@@ -9,12 +9,6 @@ for i=1:N
             if abs(k(i)-k(j)) < 1e-8
                 out(i,j) = k(j);
                 out(j,i) = out(i,j);
-%             elseif abs(k(i)) < 1e-8
-%                 out(i,j) = k(i);
-%                 out(j,i) = out(i,j);
-%             elseif abs(k(j)) < 1e-8
-%                 out(i,j) = k(j);
-%                 out(j,i) = out(i,j);
             else
                 out(i,j)= (k(i)-k(j))/log(k(i)/k(j));
                 out(j,i)= out(i,j);

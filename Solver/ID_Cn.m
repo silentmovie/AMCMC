@@ -1,4 +1,4 @@
-function [pai,Qrow,minEig] = ID_Cn(seed,N)
+function [pai,Qrow,minEigQrow] = ID_Cn(seed,N)
 
 rng(seed,"twister")
 pai = rand(1,N);                   
@@ -16,7 +16,7 @@ Q = Q.*edge;
 Qrow = RowSumZero(Q)
 
 Eigenvalue = eig(Qrow);
-minEig = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
+minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
 
 % check if detailed balance:
 DB = diag(pai)*Qrow;
