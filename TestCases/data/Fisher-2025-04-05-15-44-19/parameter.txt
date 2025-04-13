@@ -1,0 +1,7 @@
+N = 625
+seed = 2596
+tspan = 0  2000
+deltaT = 1.00e-02
+samplesize = 4.84e+05
+ini_alphat = 6.51e-03
+minEigQrow = -3.26e-03

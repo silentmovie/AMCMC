@@ -14,7 +14,7 @@ Ham = zeros(TotIt+1,1);
 
 % effSteps(1) and alphathist(1) are dummy.
 effSteps = deltaT*ones(TotIt+1,1);
-alphathist =  0.1141*ones(TotIt+1,1);
+alphathist =  alphat*ones(TotIt+1,1);
 
 %% Initial Data
 rhohist(1,:) = rho0;
@@ -85,10 +85,10 @@ for j=2:(TotIt+1)
     %     %     alphathist(j) = alphathist(j-1);
     %     % end
     %     % alphathist(j) = alphat*log(deltaT*double(j)); 
-        alphathist(j) = 0.1141/(deltaT*double(j));
-        if alphathist(j) <= alphat
-            alphathist(j) = alphat;
-        end
+        alphathist(j) = alphat/log(deltaT*double(j));
+        % if alphathist(j) <= alphat
+        %     alphathist(j) = alphat;
+        % end
     end
     % alphathist(j) = alphat*tanh(deltaT*double(j));
     

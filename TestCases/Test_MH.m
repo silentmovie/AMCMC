@@ -7,7 +7,7 @@ close all;
 
 N = 625;                                        % num of states
 seed = 2596;                                     % seed for random number generator with method 'twister'
-tspan = [0,1000];                                % total time span
+tspan = [0,3000];                                % total time span
 deltaT = 1e-2;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
 halftime = tspan(2)/2;
@@ -19,10 +19,10 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 % [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
 % samplesize = 1e6;
 [pai, Qrow, minEig] =ID_MGaussian(seed, N);
-samplesize = 484314;   
+% samplesize = 484314;   
 
 % total particle numbers
-% samplesize = ceil(5/min(pai));
+samplesize = ceil(5/min(pai));
 
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);

@@ -1,0 +1,6 @@
+N = 625
+seed = 2596
+tspan = 0  3000
+deltaT = 1.00e+00
+samplesize = 4.84e+05
+minEig = -3.26e-03

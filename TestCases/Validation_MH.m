@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'MH-2025-03-28-23-46-35';
+filename = 'MH-2025-04-03-23-53-52';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');

@@ -6,12 +6,11 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'Fisher-2025-04-05-15-44-19';
+filename = 'Fisher-2025-04-06-11-47-44';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
 odeFile = fullfile(dataDir, 'ode.mat');
-jumpFile = fullfile(dataDir, 'jump.mat');
 paiFile = fullfile(dataDir, 'pai.mat');
 HamFile = fullfile(dataDir, 'ham.mat');
 alphatFile = fullfile(dataDir, 'alphat.mat');
@@ -21,7 +20,6 @@ stepFile = fullfile(dataDir, 'steps.mat');
 
 load(parameterFile)
 load(odeFile)
-load(jumpFile)
 load(paiFile)
 load(HamFile)
 load(alphatFile)
@@ -77,13 +75,10 @@ subplot(3,1,1)
 % 
 errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
 logErrorODE = log10(errorODE);
-errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
-logErrorJump = log10(errorJump);
 hold on;
 plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
-plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
 plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'best');
+legend(strcat(parts{1},'-','ode'),'fontsize',20, 'Location', 'best');
 hold off;
 subtitle(['\fontsize{20} t-log(error)'])
 
@@ -162,16 +157,14 @@ subtitle(['\fontsize{20} t-log(error)'])
 subplot(3,1,2)
 hold on;
 plot((1:1:TotIt-1),alphatODE(2:1:TotIt),'b-*')
-plot((1:1:TotIt-1),alphatJump(2:1:TotIt),'b-^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20,'Location', 'best');
+legend(strcat(parts{1},'-','ode'),'fontsize',20,'Location', 'best');
 hold off;
 subtitle(['\fontsize{20} Damping parameter \gamma(t) = ', num2str(alphat, '%0.2e')])
 
 subplot(3,1,3)
 hold on;
 plot((1:1:TotIt-1),StepODE(2:1:TotIt),'b-*')
-plot((1:1:TotIt-1),StepJump(2:1:TotIt),'b-^')
-legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'best');
+legend(strcat(parts{1},'-','ode'),'fontsize',20, 'Location', 'best');
 ylim([0.2*deltaT,5*deltaT])
 hold off;
 subtitle('Effective stepsize', 'fontsize',20)

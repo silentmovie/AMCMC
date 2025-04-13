@@ -16,5 +16,5 @@ Mat4Eig = invR'*(V'*Omega*invPai*Omega*invPai*Omega*V)*invR;
 Eigenvalue = eig(Mat4Eig);
 Eigenvalue = sort(Eigenvalue,'ascend');
 % out = Eigenvalue;
-out = Eigenvalue(1);
+out = Eigenvalue;
 end
