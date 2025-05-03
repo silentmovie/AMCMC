@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'Fisher-2025-04-06-11-47-44';
+filename = 'Fisher-2025-04-18-12-35-36';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -25,6 +25,7 @@ load(HamFile)
 load(alphatFile)
 load(stepFile)
 % load(maxRowFile)
+pai = pai/(sum(sum(pai)));
 
 [TotIt,~] = size(rhoODE);
 

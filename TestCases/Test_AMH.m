@@ -1,11 +1,11 @@
-clear;
-clc;
-close all;
+% clear;
+% clc;
+% close all;
 
 
 %%% Initialization
 
-N = 8;                                        % num of states
+N = 625;                                        % num of states
 seed = 2596;                                     % seed for random number generator with method 'twister'
 tspan = [0,1500];                                % total time span
 deltaT = 1e-2;                                % time stepsize
@@ -18,13 +18,13 @@ method = 'Fisher';                             % method from different theta_{ij
 
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
-[pai, Qrow, minEig] = ID_TwoLoop(seed, N);
-% [pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
+% [pai, Qrow, minEig] = ID_TwoLoop(seed, N);
+[pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
 % samplesize = 484314;                              % total particle numbers
-samplesize = ceil(5/min(pai));
+% samplesize = ceil(5/min(pai));
+samplesize = 5e5;
 % 2*sqrt(-minEigQrow)
 rayleigh = rayleigh(-diag(pai)*Qrow,pai);
-pause
 
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
@@ -44,11 +44,11 @@ psi0 = psi0/sum(psi0);
 funODE = str2func(['Iter_',method]);
 funJump = str2func(['Iter_',method,'jump']);
 
-for alphat = 0.002       % damping parameter
+for alphat = 0.0065       % damping parameter
      
     
-    [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
-    % [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
+    % [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
+    [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
     
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');

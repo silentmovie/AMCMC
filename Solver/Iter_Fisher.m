@@ -75,21 +75,21 @@ for j=2:(TotIt+1)
     % design for damping term alpha(t)
     % if deltaT*double(j) > 0
         % alphathist(j) = alphat*log(deltaT*double(j));
-    if deltaT*double(j) >= 30
+    % if deltaT*double(j) >= 30
+    % %     %     alphathist(j) = alphat;
+    % %     % else
+    %         % alphathist(j) = alphat/log(deltaT*double(j));
+    % %     % elseif deltaT*double(j) < 500
+    % %     %     alphathist(j) = alphat/log(deltaT*double(j));
+    % %     % else
+    % %     %     alphathist(j) = alphathist(j-1);
+    % %     % end
+    % %     % alphathist(j) = alphat*log(deltaT*double(j)); 
+    %     alphathist(j) = alphat/log(deltaT*double(j));
+    %     % if alphathist(j) <= alphat
     %     %     alphathist(j) = alphat;
-    %     % else
-            % alphathist(j) = alphat/log(deltaT*double(j));
-    %     % elseif deltaT*double(j) < 500
-    %     %     alphathist(j) = alphat/log(deltaT*double(j));
-    %     % else
-    %     %     alphathist(j) = alphathist(j-1);
     %     % end
-    %     % alphathist(j) = alphat*log(deltaT*double(j)); 
-        alphathist(j) = alphat/log(deltaT*double(j));
-        % if alphathist(j) <= alphat
-        %     alphathist(j) = alphat;
-        % end
-    end
+    % end
     % alphathist(j) = alphat*tanh(deltaT*double(j));
     
     % eq:AMH-kCur on page 8. This equation is the same if one fix logmean.

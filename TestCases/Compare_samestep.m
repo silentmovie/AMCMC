@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 MHfolder = 'MH-2025-04-05-18-36-53';
-AMHfolder = 'Fisher-2025-04-06-08-47-10';
+AMHfolder = 'Fisher-2025-04-05-15-44-19';
 
 dataDir = fullfile(scriptDir, 'data', MHfolder);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -28,8 +28,8 @@ TotIt = 150000;
 startpt = 0;
 % pltstep = max(TotIt/200,1);
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
-pltstep = 3*int64(1/deltaT);
-
+pltstep = 20*int64(1/deltaT);
+% pltstep =1;
 
 
 figure('Renderer', 'painters', 'Position', [10 10 800 500])   %[10 10 700 550]
@@ -40,9 +40,9 @@ logErrorODE = log10(errorODE);
 errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
 logErrorJump = log10(errorJump);
 
-% xlim([0,100])
+xlim([0,150000])
 % ylim([])
-xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
+% xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
 plot((0:pltstep:TotIt-1),logErrorODE(1:pltstep:TotIt),'r-*')
 plot((0:pltstep:TotIt-1),logErrorJump(1:pltstep:TotIt),'r-^')
 % LegendPlot{1}=legend({'$\frac{1}{\sqrt{\text{sample size}}}$'}, 'Interpreter', 'latex');
@@ -93,8 +93,9 @@ LegendPlot = legend('\textrm{MH-ode}','\textrm{MH-jump}',  ...
                     [parts{1},'-ode'],[parts{1},'-jump'], ...
                     '$\log\frac{1}{\sqrt{M}}$');
                     
-                    % '$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$');
-set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'eastoutside'); %'eastoutside'
+                    
+                    %    '$\log\frac{1}{\sqrt{M}}$','$\log\frac{1}{M}$');                 
+set(LegendPlot,'Interpreter','latex','fontsize',20, 'Location', 'best'); %'eastoutside'
 set(LegendPlot,'FontName', 'Helvetica')
 
 
@@ -104,7 +105,7 @@ hold off;
 
 
 set(findall(gcf, 'Type', 'axes'), 'FontSize', 24);
-figFile = fullfile(dataDir, 'Compare.png');
+figFile = fullfile(dataDir, 'Compare-15-44-19.png');
 saveas(gcf, figFile)
 
 

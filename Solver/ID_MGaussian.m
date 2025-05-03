@@ -12,7 +12,7 @@ pai = exp(-0.5*((x-xc1).^2+(y-yc1).^2)*20);
 xc2=0.75;
 yc2=0.75;
 pai = pai + exp(-0.5*((x-xc2).^2+(y-yc2).^2)*80);
-pai = pai/(sum(sum(pai)));
+% pai = pai/(sum(sum(pai)));
 pai = reshape(pai,1,N);
 
 Q = AcceptReject_RW(pai);
