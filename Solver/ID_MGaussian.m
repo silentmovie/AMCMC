@@ -21,7 +21,7 @@ Q = Q.*edge;
 Qrow = RowSumZero(Q);
 
 Eigenvalue = eig(Qrow);
-minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-3));
+minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-8));
 
 % check if detailed balance:
 DB = diag(pai)*Qrow;

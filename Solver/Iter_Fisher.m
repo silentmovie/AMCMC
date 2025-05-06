@@ -30,6 +30,8 @@ effSteps(1) = NaN;
 alphathist(1) = NaN;         
 %alpha=-1 means psi is not updated by ODE, the next iteration for rho is MH and the current iteration is not damped.
 
+Eigenvalue = eig(Q);
+minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-8));
 
 %%% Iteration
 
@@ -54,26 +56,38 @@ for j=2:(TotIt+1)
     end
     
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-    if deltaT*double(j) < 30
-    % if double(j) <= 30
-       % if j>2 && Ham(j-1)>Ham(j-2)
-       %    warning('Ham increasing')
-       %    j
-       % end
-       rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
-       kCur = rhohist(j,:)./pai;
-       psihist(j,:) = -log(kCur);
-       psiCur = psihist(j,:);
-       Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
-       Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
-       alphathist(j) = -1;
-       effSteps(j) = deltaT;
-       continue
-    end
+%     if deltaT*double(j) < 1
+%     % if double(j) <= 30
+%        % if j>2 && Ham(j-1)>Ham(j-2)
+%        %    warning('Ham increasing')
+%        %    j
+%        % end
+%        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+%        kCur = rhohist(j,:)./pai;
+%        psihist(j,:) = -log(kCur);
+%        psiCur = psihist(j,:);
+%        Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
+%        Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
+%        alphathist(j) = -1;
+%        effSteps(j) = deltaT;
+%        continue
+%     end
 
 
     % design for damping term alpha(t)
-    % if deltaT*double(j) > 0
+%     if deltaT*double(j) < 1
+%         alphathist(j) = -1;
+%     else
+%         alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j));
+%         if alphathist(j)<= alphat
+%             alphathist(j) = alphat;
+%         end
+%     end
+            
+    % if deltaT*double(j) >= 1
+    %    alphathist(j) = 3/(deltaT*double(j));
+    % elseif alphathist(j) <= 2*sqrt(-minEigQrow)
+    %     alphathist(j) = 2*sqrt(-minEigQrow);
         % alphathist(j) = alphat*log(deltaT*double(j));
     % if deltaT*double(j) >= 30
     % %     %     alphathist(j) = alphat;
@@ -120,7 +134,7 @@ for j=2:(TotIt+1)
 
     %% restart  
     % if it is too far from the target, run MH in the next iteration
-    if any(kCur <= 1e-3) %&& deltaT*double(j)< 500
+    if any(kCur <= 1e-8) %&& deltaT*double(j)< 500
         warning('too far in (%d)-th iteration', j)
         
         psiCur = -log(kCur);

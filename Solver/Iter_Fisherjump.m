@@ -34,6 +34,8 @@ inpo = randsample(N,samplesize, true, rhohist(1,:))';    % entry is the state of
 % current is array of 1*N
 current = histcounts(inpo, N);    % entry is # of particles in each state
 
+Eigenvalue = eig(Q);
+minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-8));
 
 %%% Iteration
 
@@ -60,25 +62,35 @@ for j = 2:(TotIt+1)
     end
 
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-    if deltaT*double(j) < 30
-        % if double(j) <= 30
-        % if j>2 && Ham(j-1)>Ham(j-2)
-        %    warning('Ham increasing')
-        %    j
-        % end
-        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
-        kCur = rhohist(j,:)./pai;
-        psihist(j,:) = -log(kCur);
-        psiCur = psihist(j,:);
-        Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
-        Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
-        alphathist(j) = -1;
-        effSteps(j) = deltaT;
-        continue
-    end
+%     if deltaT*double(j) < 1
+%         % if double(j) <= 30
+%         % if j>2 && Ham(j-1)>Ham(j-2)
+%         %    warning('Ham increasing')
+%         %    j
+%         % end
+%         rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+%         kCur = rhohist(j,:)./pai;
+%         psihist(j,:) = -log(kCur);
+%         psiCur = psihist(j,:);
+%         Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
+%         Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
+%         alphathist(j) = -1;
+%         effSteps(j) = deltaT;
+%         continue
+%     end
 
-
-    % if deltaT*double(j) > 0
+%     if deltaT*double(j) < 1
+%         alphathist(j) = -1;
+%     else
+%         alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j));
+%         if alphathist(j)<= alphat
+%             alphathist(j) = alphat;
+%         end
+%     end
+    % if deltaT*double(j) >= 1
+    %     alphathist(j) = 3/(deltaT*double(j));
+    % elseif alphathist(j) <= 2*sqrt(-minEigQrow)
+    %     alphathist(j) = 2*sqrt(-minEigQrow);
     %     % alphathist(j) = alphat*log(deltaT*double(j));
     % if deltaT*double(j) >= 30
     % %     %     alphathist(j) = alphat;

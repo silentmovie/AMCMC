@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'chi-2025-03-26-18-23-38-C3';
+filename = 'Fisher-2025-05-04-13-40-51';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -39,7 +39,7 @@ t = (tspan(1):deltaT:tspan(2))';
 startpt = 0;
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
 pltstep = 1*int64(1/deltaT);
-TotIt=650;
+% TotIt=650;
 % pltstep = max(TotIt/100,1);
 % pltstep = 1;
 
@@ -47,7 +47,7 @@ TotIt=650;
 figure('Renderer', 'painters', 'Position', [10 10 700 1400])
   
 % Plot for validation
-subplot(2,1,1)
+subplot(3,1,1)
 
 L = zeros(3,1);
 L(1) = plot(0,nan,'k.');
@@ -56,7 +56,7 @@ L(2) = plot(0,nan,'k*');
 L(3) = plot(0,nan,'k^');
 
 j=0;
-for state = 1:3
+for state = [1,3,64]
     j = j+1;
     % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
     % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');
@@ -74,7 +74,7 @@ ylabel('Density')
 %          })
 legend(L,'Target',strcat(parts{1},'-ode'), strcat(parts{1},'-jump'),'fontsize',20, 'Location', 'best');
 
-subplot(2,1,2)
+subplot(3,1,2)
 hold on;
 plot((startpt:pltstep:TotIt-1),log10(HamODE(startpt+1:pltstep:TotIt)),'b-*')
 plot((startpt:pltstep:TotIt-1),log10(HamJump(startpt+1:pltstep:TotIt)),'b-^')
@@ -85,21 +85,22 @@ ylabel('log10(Hamiltonian)')
 
 %% plot for error 
 
-% errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
-% logErrorODE = log10(errorODE);
-% errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
-% logErrorJump = log10(errorJump);
-% hold on;
-% plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
-% plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
-% plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
-% legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'best');
-% hold off;
-% ylabel('log10(error)')
-% subtitle(['\fontsize{20} t-log(error)'])
+subplot(3,1,3)
+errorODE = sqrt(sum((rhoODE(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorODE = log10(errorODE);
+errorJump = sqrt(sum((rhoJump(:,1:N)-pai).^2,2));     % cal row norm of the difference
+logErrorJump = log10(errorJump);
+hold on;
+plot((startpt:pltstep:TotIt-1),logErrorODE(startpt+1:pltstep:TotIt),'marker','*')
+plot((startpt:pltstep:TotIt-1),logErrorJump(startpt+1:pltstep:TotIt),'marker','^')
+plot((startpt:pltstep:TotIt-1),-0.5*log10(samplesize),'Marker','.')
+legend(strcat(parts{1},'-','ode'), strcat(parts{1},'-','jump'),'fontsize',20, 'Location', 'best');
+hold off;
+ylabel('log10(error)')
+subtitle(['\fontsize{20} t-log(error)'])
 
 %% old plot
-% subplot(4,1,3)
+
 % 
 
 

@@ -6,7 +6,7 @@ close all;
 scriptDir = fileparts(mfilename('fullpath'));
 
 % Define the relative path to the data file
-filename = 'MH-2025-04-03-23-53-52';
+filename = 'MH-2025-05-04-10-31-45';
 parts = split(filename, '-');
 dataDir = fullfile(scriptDir, 'data', filename);
 parameterFile = fullfile(dataDir, 'parameter.mat');
@@ -24,11 +24,12 @@ load(paiFile)
 % load(stepFile)
 % load(maxRowFile)
 
+pai = pai/(sum(sum(pai)));
 [TotIt,~] = size(rhoODE);
 
 % TotIt =;
 
-cc = hsv(16);
+cc = hsv(60);
 t = (tspan(1):deltaT:tspan(2))';
     
 % pltstep = 0.4/deltaT;         % plt every pltstep iterations
@@ -45,14 +46,14 @@ L(2) = plot(0,nan,'k*');
 L(3) = plot(0,nan,'k^');
 
 j=0;
-for state = 2:4
+for state = [1,3,64]
     j = j+1;
     % plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(3*(state-1)+1,:), 'marker','.')
     % plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','*');
     % plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(3*(state-1)+1,:),'marker','^')
-    plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(2*j-1,:), 'marker','.')
-    plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(2*j-1,:),'marker','*');
-    plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(2*j-1,:),'marker','^')
+    plot((startpt:pltstep:TotIt-1),pai(state), 'color', cc(10*j+20,:), 'marker','.')
+    plot((startpt:pltstep:TotIt-1), rhoODE(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','*');
+    plot((startpt:pltstep:TotIt-1), rhoJump(startpt+1:pltstep:TotIt, state), 'color', cc(10*j+20,:),'marker','^')
 end
 
 hold off;
