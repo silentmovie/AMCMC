@@ -17,6 +17,10 @@ rhohist(1,:) = rho0;                   % the first row of rho-history is t=0, th
 
 for i=2:(TotIt+1)
     % MH-ode defined between detailed-balanced and Q-MH on Page 2
+    if mod(i,1000)==0
+        i
+    end
+
     rhohist(i,:) = rhohist(i-1,:) + rhohist(i-1,:)*(deltaT*Q);
 end
 

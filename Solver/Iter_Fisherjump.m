@@ -1,4 +1,4 @@
-function [rhohist, psihist, Ham, effSteps, alphathist] = Iter_Fisherjump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
+function [rhohist, psihist, Ham, effSteps, alphathist] = Iter_Fisherjump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, seed,mode)
 
 %%% Initialization
 %% Data structure:
@@ -30,9 +30,11 @@ alphathist(1) = NaN;
 %alpha=-1 means psi is not updated by ODE, the next iteration for rho is MH and the current iteration is not damped.
 
 % inpo is array of 1*samplesize, 
-inpo = randsample(N,samplesize, true, rhohist(1,:))';    % entry is the state of one particle 
+% rng(seed);
+% inpo = randsample(N,samplesize, true, rhohist(1,:))';    % entry is the state of one particle 
 % current is array of 1*N
-current = histcounts(inpo, N);    % entry is # of particles in each state
+current = samplesize / N * ones(1,N);
+% current = histcounts(inpo, N);    % entry is # of particles in each state
 
 Eigenvalue = eig(Q);
 minEigQrow = max(Eigenvalue(abs(Eigenvalue)>=1e-8));
@@ -62,22 +64,27 @@ for j = 2:(TotIt+1)
     end
 
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-%     if deltaT*double(j) < 1
-%         % if double(j) <= 30
-%         % if j>2 && Ham(j-1)>Ham(j-2)
-%         %    warning('Ham increasing')
-%         %    j
-%         % end
-%         rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
-%         kCur = rhohist(j,:)./pai;
-%         psihist(j,:) = -log(kCur);
-%         psiCur = psihist(j,:);
-%         Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
-%         Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
-%         alphathist(j) = -1;
-%         effSteps(j) = deltaT;
-%         continue
-%     end
+    if deltaT*double(j) < 30
+        % if double(j) <= 30
+        % if j>2 && Ham(j-1)>Ham(j-2)
+        %    warning('Ham increasing')
+        %    j
+        % end
+        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+        kCur = rhohist(j,:)./pai;
+        psihist(j,:) = -log(kCur);
+        psiCur = psihist(j,:);
+        Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
+        Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
+        alphathist(j) = -1;
+        effSteps(j) = deltaT;
+        continue
+    end
+    
+    % if deltaT*double(j) > 3
+    %     alphathist(j) = max(3/(deltaT*double(j)-2),alphat);
+    % 
+    % end
 
 %     if deltaT*double(j) < 1
 %         alphathist(j) = -1;
@@ -87,8 +94,8 @@ for j = 2:(TotIt+1)
 %             alphathist(j) = alphat;
 %         end
 %     end
-    % if deltaT*double(j) >= 1
-    %     alphathist(j) = 3/(deltaT*double(j));
+%     if deltaT*double(j) >= 3
+%         alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j)-2);
     % elseif alphathist(j) <= 2*sqrt(-minEigQrow)
     %     alphathist(j) = 2*sqrt(-minEigQrow);
     %     % alphathist(j) = alphat*log(deltaT*double(j));
@@ -97,13 +104,13 @@ for j = 2:(TotIt+1)
     % %     % else
     %     % alphathist(j) = alphat/log(deltaT*double(j));
     %     alphathist(j) =  0.1141/(deltaT*double(j));
-    %     if alphathist(j) <= alphat
-    %         alphathist(j) = alphat;
-    %     end
+%         if alphathist(j) <= alphat
+%             alphathist(j) = alphat;
+%         end
     % %         % alphathist(j) = alphat/log(deltaT*double(j)+30);
     % %     % end
     % %     % alphathist(j) = alphat*log(deltaT*double(j)); 
-    % end
+%     end
     % alphathist(j) = alphat*tanh(deltaT*double(j));
 
     out = zeros(N,N);
@@ -116,14 +123,13 @@ for j = 2:(TotIt+1)
     tmp_deltaT = deltaT;
     negative_part = eye(N) + tmp_deltaT * P;
     while any(negative_part(:) < 0)
-        
-        warning('negative part in (%d)-th iteration', j)
-        j
-        % pause
-        tmp_deltaT = 0.1 * tmp_deltaT
+        tmp_deltaT = 0.1 * tmp_deltaT;
         negative_part = eye(N) + tmp_deltaT * P;
     end
     effSteps(j) = tmp_deltaT;
+    if effSteps(j) < deltaT
+       warning('negative part in (%d)-th iteration with stepsize (%0.2e)', j, effSteps(j))
+    end
     P = eye(N) + tmp_deltaT * P;
     
     %%% restart method
@@ -158,13 +164,19 @@ for j = 2:(TotIt+1)
 
 
     %% restart by MH
+    % sc = parallel.pool.Constant(RandStream('Threefry','Seed',seed+1));
 
     parfor state = 1:N
         % out is matrix of N*N
-        tmp = randsample(N, current(state), true, P(state,:))';
+        % stream = sc.Value;
+        % stream.Substream = state;
+        seed_ti = seed + 10000 * j + state;
+        stream = RandStream('Threefry', 'Seed', seed_ti);
+        tmp = randsample(stream, N, current(state), true, P(state,:))';
         out(state,:) = histcounts(tmp, edges);
         % out(state,:) = histcounts(tmp, edges.Value);
     end
+    current = sum(out,1);
     % futures = cell(N, 1);
     % for state = 1:N
     % % futures{state} = parfeval(@computeHist, 1, state, N, current, P, edges);
@@ -177,7 +189,7 @@ for j = 2:(TotIt+1)
     %     out(state, :) = fetchOutputs(futures{state});
     % end
 
-    current = sum(out,1);
+
 
     if any(current==0)
         current(current==0) = current(current==0) + 1;

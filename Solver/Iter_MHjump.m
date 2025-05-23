@@ -1,4 +1,4 @@
-function rhohist = Iter_MHjump(pai, rho0, Q, tspan, deltaT, samplesize, mode)
+function rhohist = Iter_MHjump(pai, rho0, Q, tspan, deltaT, samplesize, seed,mode)
 
 %%% Initialization
 %% Data structure:
@@ -15,10 +15,10 @@ edges = [0.5:1:(N+0.5)];     % bins in the randsample
 rhohist(1,:) = rho0;         % the first row of rho-history is t=0, the last row is t=tspan(2)
 
 % inpo is array of 1*samplesize, 
-inpo = randsample(N,samplesize, true, rho0)';    % entry is the state of one particle 
+% inpo = ransdsample(N,samplesize, true, rho0)';    % entry is the state of one particle 
 % current is array of 1*N
-current = histcounts(inpo, N);    % entry is # of particles in each state
-
+% current = histcounts(inpo, N);    % entry is # of particles in each state
+current = samplesize / N * ones(1,N);
 
 
 P = eye(N) + Q*deltaT;       % eq:jump on Page 3, P(i,j) is prob of node i jump to node j.
@@ -33,8 +33,9 @@ for j = 2:TotIt+1
     out = zeros(N,N);     % out(i,j): # of particles from state i to state j.
     parfor state = 1:N
         %P(state,:) is the transition prob from state to the other probability
-       
-        tmp = randsample(N, current(state), true, P(state,:))';
+        seed_ti = seed + 10000 * j + state;
+        stream = RandStream('Threefry', 'Seed', seed_ti);
+        tmp = randsample(stream, N, current(state), true, P(state,:))';
         out(state,:) = histcounts(tmp, edges); 
     end
     current = sum(out,1);    % sum along column, current(j) is # of particles in destination state j.

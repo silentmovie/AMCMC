@@ -1,6 +1,0 @@
-N = 8
-seed = 2596
-tspan = 0  100
-deltaT = 1.00e-01
-samplesize = 1.00e+06
-minEig = -3.79e-02

@@ -1,7 +1,0 @@
-N = 64
-seed = 2596
-tspan = 0  300
-deltaT = 1.00e-02
-samplesize = 1.00e+04
-end_alphat = 1.53e-02
-minEigQrow = -7.66e-03

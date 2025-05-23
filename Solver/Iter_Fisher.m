@@ -56,27 +56,30 @@ for j=2:(TotIt+1)
     end
     
     % warm start by MH, psihist(j)=-log(rhohist(j,:)./pai)
-%     if deltaT*double(j) < 1
-%     % if double(j) <= 30
-%        % if j>2 && Ham(j-1)>Ham(j-2)
-%        %    warning('Ham increasing')
-%        %    j
-%        % end
-%        rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
-%        kCur = rhohist(j,:)./pai;
-%        psihist(j,:) = -log(kCur);
-%        psiCur = psihist(j,:);
-%        Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
-%        Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
-%        alphathist(j) = -1;
-%        effSteps(j) = deltaT;
-%        continue
-%     end
+    if deltaT*double(j) < 30
+    % if double(j) <= 30
+       % if j>2 && Ham(j-1)>Ham(j-2)
+       %    warning('Ham increasing')
+       %    j
+       % end
+       rhohist(j,:) = rhohist(j-1,:) + deltaT*(rhohist(j-1,:)*Q);
+       kCur = rhohist(j,:)./pai;
+       psihist(j,:) = -log(kCur);
+       psiCur = psihist(j,:);
+       Ham(j) = sum(0.25* pai* (logdiff(kCur).*logdiff(kCur).*Q.*logmean(kCur)));  
+       Ham(j) = Ham(j) + sum(0.25*pai*(logmean(kCur).*psidiffsquare(psiCur).*Q));
+       alphathist(j) = -1;
+       effSteps(j) = deltaT;
+       continue
+    end
 
 
     % design for damping term alpha(t)
-%     if deltaT*double(j) < 1
-%         alphathist(j) = -1;
+    % if deltaT*double(j) > 3
+    %     alphathist(j) = max(3/(deltaT*double(j)-2),alphat);
+    % 
+    % end
+       
 %     else
 %         alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j));
 %         if alphathist(j)<= alphat
@@ -84,8 +87,9 @@ for j=2:(TotIt+1)
 %         end
 %     end
             
-    % if deltaT*double(j) >= 1
-    %    alphathist(j) = 3/(deltaT*double(j));
+%     if deltaT*double(j) >= 1
+%        alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j)-2);
+%        
     % elseif alphathist(j) <= 2*sqrt(-minEigQrow)
     %     alphathist(j) = 2*sqrt(-minEigQrow);
         % alphathist(j) = alphat*log(deltaT*double(j));
@@ -100,10 +104,10 @@ for j=2:(TotIt+1)
     % %     % end
     % %     % alphathist(j) = alphat*log(deltaT*double(j)); 
     %     alphathist(j) = alphat/log(deltaT*double(j));
-    %     % if alphathist(j) <= alphat
-    %     %     alphathist(j) = alphat;
-    %     % end
-    % end
+%         if alphathist(j) <= alphat
+%             alphathist(j) = alphat;
+%         end
+%     end
     % alphathist(j) = alphat*tanh(deltaT*double(j));
     
     % eq:AMH-kCur on page 8. This equation is the same if one fix logmean.
@@ -117,15 +121,13 @@ for j=2:(TotIt+1)
     negative_part = kCur + psiCur* (tmp_deltaT*LM);
     while any(negative_part(:) < 0)
 
-        % enable in debug mode
-        warning('negative part in (%d)-th iteration', j)
-        % find(negative_part(:) < 0)
-        
-        % pause
         tmp_deltaT = 0.1* tmp_deltaT;
         negative_part = kCur + psiCur* (tmp_deltaT*LM);
     end
-    effSteps(j) = tmp_deltaT;      
+    effSteps(j) = tmp_deltaT;
+    if effSteps(j) < deltaT
+       warning('negative part in (%d)-th iteration with stepsize (%0.2e)', j, effSteps(j))
+    end
     
     % eq:AMH-kCur on page 8.
     % rho_t = rhohist(j-1, :) + tmp_deltaT * sum(diag(pai) * psidifference_mat(psiCur) .* logmean(rhohist(j-1, :)./pai) .* Q, 2)';
@@ -136,7 +138,7 @@ for j=2:(TotIt+1)
     % if it is too far from the target, run MH in the next iteration
     if any(kCur <= 1e-8) %&& deltaT*double(j)< 500
         warning('too far in (%d)-th iteration', j)
-        
+
         psiCur = -log(kCur);
         alphathist(j) = -1;
     else
@@ -145,10 +147,10 @@ for j=2:(TotIt+1)
                 -alphathist(j)*psiCur...
                 - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*partialTheta(kCur)).*Q, 2)'...
                );
-        if any(isnan(psiCur))
-            j
-            find(isnan(psiCur)==1)
-        end
+    % if any(isnan(psiCur))
+    %     j
+    %     find(isnan(psiCur)==1)
+    % end
     end
     %%
             

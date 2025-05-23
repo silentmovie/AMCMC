@@ -5,9 +5,9 @@ close all;
 
 %%% Initialization
 
-N = 64;                                        % num of states
-seed = 2596;                                     % seed for random number generator with method 'twister'
-tspan = [0,100];                                % total time span
+N = 625;                                        % num of states
+seed = 2020;                                     % seed for random number generator with method 'twister'
+tspan = [0,1800];                                % total time span
 deltaT = 1e-2;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
 halftime = tspan(2)/2;
@@ -17,18 +17,19 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 method = 'Fisher';                             % method from different theta_{ij} and functional F proposed in the Accelerated method.
 
 %% create target pai, QMH as Qrow and its minimum eigenvalue
-% [pai, Qrow, minEig] = ID_Cn(seed, N);
-% [pai, Qrow, minEig] = ID_TwoLoop(seed, N);
-% [pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
-[pai, Qrow, minEigQrow] =ID_HyperCube(seed, N);
+% [pai, Qrow, minEigQrow] = ID_Cn(seed, N);
+% [pai, Qrow, minEigQrow] = ID_TwoLoop(seed, N);
+[pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
+% [pai, Qrow, minEigQrow] =ID_HyperCube(seed, N);
 % samplesize = 484314;                              % total particle numbers
 % samplesize = ceil(5/min(pai));
-samplesize = 1e4;
+samplesize = 5e5;
 % 2*sqrt(-minEigQrow)
-% rayleigh = rayleigh(-diag(pai)*Qrow,pai);
+% rayleigh = rayleigh(-diag(pai)*Qrow,mpai);
+% pai = pai/sum(pai);
 rayleigh = rayleigh(diag(pai)*Qrow,pai);
 2*sqrt(rayleigh(1))
-pause
+
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
 rho0 = ones(1,N);
@@ -47,11 +48,11 @@ psi0 = -log(rho0./pai);
 funODE = str2func(['Iter_',method]);
 funJump = str2func(['Iter_',method,'jump']);
 2*sqrt(rayleigh(1))
-for alphat = 0.17       % damping parameter
+for alphat =  2*sqrt(rayleigh(1))     % damping parameter
      
     
-    [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
-    [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, mode);
+    % [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
+    [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, seed, mode);
     
     % Auto-save
     Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
@@ -84,19 +85,19 @@ for alphat = 0.17       % damping parameter
     alphatmat = fullfile(NewFolder, alphatmat);
 
     save(Qmat, 'Qrow');
-    save(ODEmat, 'rhoODE', 'psiODE');
+    % save(ODEmat, 'rhoODE', 'psiODE');
     save(paimat, 'pai');
     save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize','alphat','minEigQrow');
     
     save(Jumpmat, 'rhoJump', 'psiJump');
-    save(Hammat, 'HamODE', 'HamJump');
-    save(alphatmat,'alphatODE','alphatJump');
-    save(stepmat, 'StepODE', 'StepJump');
+    % save(Hammat, 'HamODE', 'HamJump');
+    % save(alphatmat,'alphatODE','alphatJump');
+    % save(stepmat, 'StepODE', 'StepJump');
+    % % 
     % 
-    % 
-    % save(Hammat, 'HamODE')
-    % save(alphatmat,'alphatODE')
-    % save(stepmat, 'StepODE');
+    save(Hammat, 'HamJump')
+    save(alphatmat,'alphatJump')
+    save(stepmat, 'StepJump');
 
     parametertxt = ['parameter.txt'];
     parametertxt = fullfile(NewFolder, parametertxt);

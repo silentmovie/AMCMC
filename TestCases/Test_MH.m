@@ -5,9 +5,9 @@ close all;
 
 %%% Initialization
 
-N = 64;                                        % num of states
+N = 625;                                        % num of states
 seed = 2596;                                     % seed for random number generator with method 'twister'
-tspan = [0,300];                                % total time span
+tspan = [0,3000];                                % total time span
 deltaT = 1e-2;                                % time stepsize
 TotIt = tspan(2)/deltaT;                      % total iteration
 halftime = tspan(2)/2;
@@ -18,18 +18,17 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
 % [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
 % samplesize = 1e6;
-% [pai, Qrow, minEig] = ID_MGaussian(seed, N);
-[pai, Qrow, minEigQrow] = ID_HyperCube(seed, N);
+[pai, Qrow, minEig] = ID_MGaussian(seed, N);
+% [pai, Qrow, minEigQrow] = ID_HyperCube(seed, N);
 % samplesize = 484314;   
 
 % total particle numbers
 % samplesize = ceil(5/min(pai));
-samplesize = 1e4;
+samplesize = 5e5;
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
 rho0 = ones(1,N);
 rho0 = rho0/sum(rho0);
-
 
 
 % %% Sample initial data for two-mode guassian
@@ -116,7 +115,7 @@ rho0 = rho0/sum(rho0);
 %% Run MH-method solver 
 rhoODE = Iter_MH(pai,rho0,Qrow, tspan,deltaT,mode);
 
-rhoJump = Iter_MHjump(pai, rho0, Qrow, tspan, deltaT, samplesize, mode);
+rhoJump = Iter_MHjump(pai, rho0, Qrow, tspan, deltaT, samplesize, seed,mode);
 
 %% Auto-save
 Date = datestr(datetime('now'),'yyyy-mm-dd-HH-MM-SS');
@@ -151,7 +150,7 @@ parameterlist = {
     ['tspan = ' num2str(tspan)]
     ['deltaT = ' num2str(deltaT, '%0.2e')]
     ['samplesize = ' num2str(samplesize, '%0.2e')]
-    ['minEig = ' num2str(minEigQrow, '%0.2e')]
+    ['minEig = ' num2str(minEig, '%0.2e')]
     };
 
 fid = fopen(parametertxt,'w');
