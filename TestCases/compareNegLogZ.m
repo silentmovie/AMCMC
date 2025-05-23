@@ -39,12 +39,12 @@ neg_logZ = -log(sum(pai));
 % logZODE = log10(sum(rhoODE(:,1:N).*log(rhoODE(:,1:N)./pai),2)-neg_logZ);     
 logZJump = log10(sum(rhoJump(:,1:N).*log(rhoJump(:,1:N)./pai),2)-neg_logZ); 
 
+% plot((0:pltstep:TotIt-1),logZODE(1:pltstep:TotIt),'r-*')
+plot((0:pltstep:TotIt-1),logZJump(1:pltstep:TotIt),'r-^')
 
 % xlim([0,150000])
 % ylim([])
 % xlabel(['\fontsize{20} Iteration \times ', num2str(deltaT, '%0.2e'), ' s'])
-% plot((0:pltstep:TotIt-1),logZODE(1:pltstep:TotIt),'r-*')
-plot((0:pltstep:TotIt-1),logZJump(1:pltstep:TotIt),'r-^')
 % LegendPlot{1}=legend({'$\frac{1}{\sqrt{\text{sample size}}}$'}, 'Interpreter', 'latex');
 % LegendPlot = cell(5,1);
 % LegendPlot{1} = '\frac{1}{\sqrt{\text{sample size}}}';
@@ -101,7 +101,7 @@ hold off;
 
 
 set(findall(gcf, 'Type', 'axes'), 'FontSize', 24);
-figFile = fullfile(dataDir, 'NegLogZ-14-22-28-wrong.png');
+figFile = fullfile(dataDir, 'NegLogZ.png');
 saveas(gcf, figFile)
 
 

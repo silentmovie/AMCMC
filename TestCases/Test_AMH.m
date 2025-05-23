@@ -21,21 +21,21 @@ method = 'Fisher';                             % method from different theta_{ij
 % [pai, Qrow, minEigQrow] = ID_TwoLoop(seed, N);
 [pai, Qrow, minEigQrow] =ID_MGaussian(seed, N);
 % [pai, Qrow, minEigQrow] =ID_HyperCube(seed, N);
-% samplesize = 484314;                              % total particle numbers
+
+% total particle numbers
 % samplesize = ceil(5/min(pai));
 samplesize = 5e5;
-% 2*sqrt(-minEigQrow)
-% rayleigh = rayleigh(-diag(pai)*Qrow,mpai);
-% pai = pai/sum(pai);
+
+
 rayleigh = rayleigh(diag(pai)*Qrow,pai);
-2*sqrt(rayleigh(1))
+% 2*sqrt(-minEigQrow)
+% 2*sqrt(rayleigh(1))
 
 %% create initial rho0 and psi0
 % rho0 = rand(1,N);
 rho0 = ones(1,N);
 rho0 = rho0/sum(rho0);
-% rho0 =[0.138558909613056	0.138558909613056	0.150907613766526	0.0719745670073633	0.0719745670073633	0.150907613766526	0.138558909613056	0.138558909613056];
-% psi0 =[0.0669171987353261	0.0669171987353261	-0.0184550461125071	-0.258929299518705	-0.258929299518705	-0.0184550461125071	0.0669171987353260	0.0669171987353260];
+
 % psi0 = randn(1,N);
 psi0 = -log(rho0./pai);
 % psi0 = rand(1,N)-0.5;
@@ -47,11 +47,11 @@ psi0 = -log(rho0./pai);
 
 funODE = str2func(['Iter_',method]);
 funJump = str2func(['Iter_',method,'jump']);
-2*sqrt(rayleigh(1))
+
 for alphat =  2*sqrt(rayleigh(1))     % damping parameter
      
     
-    % [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
+    [rhoODE,psiODE,HamODE, StepODE,alphatODE] = funODE(pai,rho0,Qrow,psi0,alphat,tspan,deltaT,mode);
     [rhoJump,psiJump,HamJump, StepJump,alphatJump] = funJump(pai, rho0, Qrow, psi0, alphat, tspan, deltaT, samplesize, seed, mode);
     
     % Auto-save
@@ -85,19 +85,15 @@ for alphat =  2*sqrt(rayleigh(1))     % damping parameter
     alphatmat = fullfile(NewFolder, alphatmat);
 
     save(Qmat, 'Qrow');
-    % save(ODEmat, 'rhoODE', 'psiODE');
+    save(ODEmat, 'rhoODE', 'psiODE');
     save(paimat, 'pai');
     save(parametermat, 'N', 'seed', 'tspan', 'deltaT', 'samplesize','alphat','minEigQrow');
     
     save(Jumpmat, 'rhoJump', 'psiJump');
-    % save(Hammat, 'HamODE', 'HamJump');
-    % save(alphatmat,'alphatODE','alphatJump');
-    % save(stepmat, 'StepODE', 'StepJump');
-    % % 
-    % 
-    save(Hammat, 'HamJump')
-    save(alphatmat,'alphatJump')
-    save(stepmat, 'StepJump');
+    save(Hammat, 'HamODE', 'HamJump');
+    save(alphatmat,'alphatODE','alphatJump');
+    save(stepmat, 'StepODE', 'StepJump');
+
 
     parametertxt = ['parameter.txt'];
     parametertxt = fullfile(NewFolder, parametertxt);

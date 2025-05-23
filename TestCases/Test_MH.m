@@ -17,99 +17,17 @@ mode = 'None';                                 % if 'None', no print, if 'Print'
 %% create target pai, QMH as Qrow and its minimum eigenvalue
 % [pai, Qrow, minEig] = ID_Cn(seed, N);
 % [pai, Qrow, minEig] = ID_TwoCycle(seed, N);
-% samplesize = 1e6;
 [pai, Qrow, minEig] = ID_MGaussian(seed, N);
 % [pai, Qrow, minEigQrow] = ID_HyperCube(seed, N);
-% samplesize = 484314;   
+
 
 % total particle numbers
 % samplesize = ceil(5/min(pai));
 samplesize = 5e5;
-%% create initial rho0 and psi0
+%% create initial rho0
 % rho0 = rand(1,N);
 rho0 = ones(1,N);
 rho0 = rho0/sum(rho0);
-
-
-% %% Sample initial data for two-mode guassian
-% N = 625;         % num of states
-
-% n = sqrt(N);
-% x = linspace(0,1,n);
-% y = linspace(0,1,n);
-% y = y';
-
-% xc1=0.25;
-% yc1=0.25;
-% xc2=0.75;
-% yc2=0.75;
-
-% % pai = exp(-0.5*((x-xc1).^2+(y-yc1).^2)*20);
-% % pai = pai + exp(-0.5*((x-xc2).^2+(y-yc2).^2)*80);
-% pai = exp(-0.5*((x-xc1).^2+(y-yc1).^2)*25);
-
-% pai = pai + exp(-0.5*((x-xc2).^2+(y-yc2).^2)*100);
-% pai = pai/(sum(sum(pai)));
-% pai = reshape(pai,1,N);
-
-% rho0 = ones(1,N);
-% rho0 = rho0/sum(rho0);
-
-%% Sample initial data for two-loop
-
-% pai(1,1:40) = 4;
-% pai(1,41:60) = 1;
-% pai(1,61:100) = 4;
-% pai = pai/sum(pai);
-
-% pai=0.2*ones(n,n);
-% pai(3,6:19)=1;
-% pai(8,6:19)=1;
-% pai(17,6:19)=1;
-% pai(22,6:19)=1;
-% pai(8:17,13)=1;
-% pai(3:8,6)=1;
-% pai(3:8,19)=1;
-% pai(17:22,6)=1;
-% pai(17:22,19)=1;
-
-% pai = pai/(sum(sum(pai)));
-% pai = reshape(pai,1,N);
-
-% pai = rand(1,N); 
-% pai = [2/3, 1/6, 1/6];
-% pai = pai/sum(pai);
-% pai = sort(pai,'descend');      % target distribution (not necessary to be 'descend')
-
-% rho0 = rand(1,N);
-% rho0 = rho0/sum(rho0);
-
-% degree = [2 2 3 2 2 3 2 2];
-% degree(1,1:N) = 2;
-% degree(1,40) = 3;
-% degree(1,61) = 3;           
-
-%% Create a Q-matrix 
-
-% %% Create a Q-matrix and run MH-ode iteration 
-
-% % QMH_{ij}=min{pi_j*deg(i)/[pi_i*deg(j)], 1}
-% % QMH(pai, (optional)degree)
-% % Q = QMH(pai, degree);
-% Q = QMH(pai);
-% % edgeQ matrix produces a candidate kernel that embeds graph information,
-% % the default one is C_n, each node sends to two nodes uniformly.
-% % edge(degree)
-% % edge = edgeTwoCycle(degree);
-% % edge = edgeCn(pai);
-% edge = edgeLattice(pai);
-% Q = Q.*edge;              % eq:Q-MH on Page 2
-
-% % RowSumZero is an operation to replace diagonal by each row sum (except on
-% % diagonal)
-% Qrow = RowSumZero(Q);     % defined between detailed-balanced and Q-MH on Page 2
-
-
 
 
 %% Run MH-method solver 
