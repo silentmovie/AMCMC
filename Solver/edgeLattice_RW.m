@@ -1,6 +1,6 @@
 function out=edgeLattice_RW(v)
 
-%%%
+%%% Generate candidate kernel for lattice by random walk.
 % Input: edge sets, weight sets for periodic lattices. v must be a squared
 % number.
 % Output: transition probability matrix

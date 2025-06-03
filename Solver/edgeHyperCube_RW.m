@@ -1,6 +1,6 @@
 function out=edgeHyperCube_RW(dimension)
 
-%%%
+%%% Generate candidate kernel for Hypercube graph by random walk.
 % Input: d is the dimension of the HyperCube
 % Output: 1/d  *  adjacent matrix of the hyper cube
 

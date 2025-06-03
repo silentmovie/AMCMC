@@ -1,5 +1,6 @@
 function [pai, Qrow, minEigQrow] = ID_TwoLoop(seed,N)
 
+%%% Generate pai and Q-matrix for twoLoop graph by random walk.
 % rng(seed,"twister")
 % pai = rand(1,N);                   
 % pai = pai/sum(pai);

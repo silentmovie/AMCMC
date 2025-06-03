@@ -81,6 +81,7 @@ for j = 2:(TotIt+1)
         continue
     end
     
+    %% damping parameter strategy
     % if deltaT*double(j) > 3
     %     alphathist(j) = max(3/(deltaT*double(j)-2),alphat);
     % 
@@ -94,24 +95,7 @@ for j = 2:(TotIt+1)
 %             alphathist(j) = alphat;
 %         end
 %     end
-%     if deltaT*double(j) >= 3
-%         alphathist(j) = 2*sqrt(-minEigQrow)/(deltaT*double(j)-2);
-    % elseif alphathist(j) <= 2*sqrt(-minEigQrow)
-    %     alphathist(j) = 2*sqrt(-minEigQrow);
-    %     % alphathist(j) = alphat*log(deltaT*double(j));
-    % if deltaT*double(j) >= 30
-    % %     %     alphathist(j) = alphat;
-    % %     % else
-    %     % alphathist(j) = alphat/log(deltaT*double(j));
-    %     alphathist(j) =  0.1141/(deltaT*double(j));
-%         if alphathist(j) <= alphat
-%             alphathist(j) = alphat;
-%         end
-    % %         % alphathist(j) = alphat/log(deltaT*double(j)+30);
-    % %     % end
-    % %     % alphathist(j) = alphat*log(deltaT*double(j)); 
-%     end
-    % alphathist(j) = alphat*tanh(deltaT*double(j));
+
 
     out = zeros(N,N);
     P = Q.*(PNpsi(psihist(j-1,:)));
@@ -164,30 +148,19 @@ for j = 2:(TotIt+1)
 
 
     %% restart by MH
-    % sc = parallel.pool.Constant(RandStream('Threefry','Seed',seed+1));
+ 
 
     parfor state = 1:N
         % out is matrix of N*N
-        % stream = sc.Value;
-        % stream.Substream = state;
+
         seed_ti = seed + 10000 * j + state;
         stream = RandStream('Threefry', 'Seed', seed_ti);
         tmp = randsample(stream, N, current(state), true, P(state,:))';
         out(state,:) = histcounts(tmp, edges);
-        % out(state,:) = histcounts(tmp, edges.Value);
+ 
     end
     current = sum(out,1);
-    % futures = cell(N, 1);
-    % for state = 1:N
-    % % futures{state} = parfeval(@computeHist, 1, state, N, current, P, edges);
-    %     futures{state} = parfeval(@computeHist, 1, state, N, current(state), P(state,:), edges);
-    % 
-    % end
-    % 
-    % % Collect results
-    % for state = 1:N
-    %     out(state, :) = fetchOutputs(futures{state});
-    % end
+
 
 
 
@@ -203,11 +176,6 @@ for j = 2:(TotIt+1)
     else
         rhohist(j,:) = current/sum(current);
         kCur = rhohist(j,:)./pai;
-        % psiCur = psiCur+ tmp_deltaT*(...
-        %     -alphathist(j)*psiCur...
-        %     - 0.5 * sum((logdiff(kCur)+1-quotient(kCur)).*Q, 2)'...
-        %     - 0.5* sum(Q.*psidiffsquare(psiCur).*partialTheta(kCur),2)'...
-        %     );
         psiCur = psiCur + tmp_deltaT*(...
         -alphathist(j)*psiCur...
         - 0.5 * sum((logdiff(kCur)+1-quotient(kCur) + psidiffsquare(psiCur).*partialTheta(kCur)).*Q, 2)'...
@@ -252,50 +220,8 @@ if strcmp(mode, 'None')
    
 elseif strcmp(mode, 'Print')
     
-    cc = hsv(3*N);
-    t = [tspan(1):deltaT:tspan(2)]';
-    
-    pltstep = 1;         % plt every pltstep iterations
-    figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
-    
-%     subplot(2,1,1)
-%     hold on;
-%     for state = 1:N
-%         plot((0:TotIt),pai(state), 'color', cc(3*(state-1)+1,:),'marker','.')
-%         plot((0:pltstep:TotIt), rhohist(1:pltstep:end, state), 'color', cc(3*(state-1)+1,:),'marker','*');
-%     end
-%     
-% %     xlim([0,tspan(2)])
-%     ylim([-0.1,1])
-%     % title('3-point convergence via M-H')
-% %     title({[num2str(N),'-point convergence time stepsize ', num2str(deltaT, '%0.2e')]
-% %     ['largest negative eigen=', num2str(minEig, '%0.2e')]
-% %     });
-%     hold off;
-
-    error = sqrt(sum((rhohist(:,1:N)-pai).^2,2));     % cal row norm of the difference
-    logError = log10(error);
-
-    subplot(2,1,2)
-    % plot(log(t(1:(end-1)/10000:end)),logError(1:(end-1)/10000:end))
-    hold on;
-    plot(t,logError)
-%     xlim(tspan)
-%     ylim([-15,0])
-%     % title('M-H: log-log plot of error');
-%     title({['MH: t-log(error) plot']
-%         ['timestep=', num2str(deltaT, '%0.2e')]
-%         });
-    halftime = tspan(2)/2;
-    P = polyfit(t(t>halftime),logError(t>halftime),1);
-    plot(t(t>halftime), P(1)*t(t>halftime) + P(2), 'r', 'LineWidth', 2)
-    % Define the formula using LaTeX syntax
-    formula = ['$log(\textrm{error}) = ', num2str(P(1)), 't+(', num2str(P(2)), ')$'];
-% 
-    % Create a legend and enable LaTeX interpretation
-    legend_entry = legend(formula);
-    set(legend_entry, 'Interpreter', 'latex', 'fontsize',13);
-    hold off;
+   warning('use plot function in TestCases folder')
+   return
 end
 
 end

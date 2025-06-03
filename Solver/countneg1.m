@@ -1,4 +1,5 @@
 function out = countneg1(alphat)
+%%% count the number of -1 in alphat as indictors for the restart per 1000 iterations.
 
 chunk_size = 1000;
 num_chunks = int64(length(alphat) / chunk_size);

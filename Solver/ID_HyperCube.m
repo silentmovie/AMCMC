@@ -1,6 +1,6 @@
 function [pai,Qrow,minEigQrow] = ID_HyperCube(seed,N)
 
-
+%%% Generate pai and Q-matrix for Hypercube graph by random walk.
 rng(seed,"twister")
 
 d = int64(log2(N))

@@ -1,4 +1,4 @@
-function [rhohist,psihist, Ham, effSteps,alphathist] = Iter_chijump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, mode)
+function [rhohist,psihist, Ham, effSteps,alphathist] = Iter_chijump(pai, rho0, Q, psi0, alphat, tspan, deltaT, samplesize, seed, mode)
 
 %%% Initialization
 %% Data structure:
@@ -28,10 +28,10 @@ alphathist(1) = NaN;
 
 
 % inpo is array of 1*samplesize, 
-inpo = randsample(N,samplesize, true, rhohist(1,:))';    % entry is the state of one particle 
-% current is array of 1*N
-current = histcounts(inpo, N);   % entry is # of particles in each state
-
+% inpo = randsample(N,samplesize, true, rhohist(1,:))';    % entry is the state of one particle 
+% % current is array of 1*N
+% current = histcounts(inpo, N);   % entry is # of particles in each state
+current = samplesize / N * ones(1,N);
 psiCur = psi0;
 % k = rho0./pai;
 
@@ -76,7 +76,9 @@ for j = 2:(TotIt+1)
     P = eye(N) + tmp_deltaT * P;
     
     parfor state = 1:N
-        tmp = randsample(N, current(state), true, P(state,:))';
+        seed_ti = seed + 10000 * j + state;
+        stream = RandStream('Threefry', 'Seed', seed_ti);
+        tmp = randsample(stream, N, current(state), true, P(state,:))';
         out(state,:) = histcounts(tmp, edges);
     end
     % current(i) = # of particle at node i.
@@ -96,50 +98,8 @@ if strcmp(mode, 'None')
    
 elseif strcmp(mode, 'Print')
     
-    cc = hsv(3*N);
-    t = [tspan(1):deltaT:tspan(2)]';
-    
-    pltstep = 1;         % plt every pltstep iterations
-    figure('Renderer', 'painters', 'Position', [10 10 1200 1200])
-    
-%     subplot(2,1,1)
-%     hold on;
-%     for state = 1:N
-%         plot((0:TotIt),pai(state), 'color', cc(3*(state-1)+1,:),'marker','.')
-%         plot((0:pltstep:TotIt), rhohist(1:pltstep:end, state), 'color', cc(3*(state-1)+1,:),'marker','*');
-%     end
-%     
-% %     xlim([0,tspan(2)])
-%     ylim([-0.1,1])
-%     % title('3-point convergence via M-H')
-% %     title({[num2str(N),'-point convergence time stepsize ', num2str(deltaT, '%0.2e')]
-% %     ['largest negative eigen=', num2str(minEig, '%0.2e')]
-% %     });
-%     hold off;
-
-    error = sqrt(sum((rhohist(:,1:N)-pai).^2,2));     % cal row norm of the difference
-    logError = log10(error);
-
-    subplot(2,1,2)
-    % plot(log(t(1:(end-1)/10000:end)),logError(1:(end-1)/10000:end))
-    hold on;
-    plot(t,logError)
-%     xlim(tspan)
-%     ylim([-15,0])
-%     % title('M-H: log-log plot of error');
-%     title({['MH: t-log(error) plot']
-%         ['timestep=', num2str(deltaT, '%0.2e')]
-%         });
-    halftime = tspan(2)/2;
-    P = polyfit(t(t>halftime),logError(t>halftime),1);
-    plot(t(t>halftime), P(1)*t(t>halftime) + P(2), 'r', 'LineWidth', 2)
-    % Define the formula using LaTeX syntax
-    formula = ['$log(\textrm{error}) = ', num2str(P(1)), 't+(', num2str(P(2)), ')$'];
-% 
-    % Create a legend and enable LaTeX interpretation
-    legend_entry = legend(formula);
-    set(legend_entry, 'Interpreter', 'latex', 'fontsize',13);
-    hold off;
+   warning('use plot function in TestCases folder')
+   return
 end
 
 end
